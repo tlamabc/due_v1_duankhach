@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "490953342675",
+    "project_id": "udev1-e6949",
+    "storage_bucket": "udev1-e6949.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:490953342675:android:ad4a18007c088fe8e35e26",
+        "android_client_info": {
+          "package_name": "com.mycompany.duev1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOhESS8p5vnOpW0cqZu4vHT239m1e1OqI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
