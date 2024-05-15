@@ -1,3 +1,7 @@
+import 'package:firebase_database/firebase_database.dart';
+import 'package:uuid/uuid.dart';
+
+import '../../../../suco.dart';
 import '/components/confirm_dialog/confirm_dialog_widget.dart';
 import '/flutter_flow/flutter_flow_choice_chips.dart';
 import '/flutter_flow/flutter_flow_drop_down.dart';
@@ -557,60 +561,60 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                     children: [
                       Builder(
                         builder: (context) => Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              16.0, 12.0, 16.0, 12.0),
+                          padding: EdgeInsetsDirectional.fromSTEB(16.0, 12.0, 16.0, 12.0),
                           child: FFButtonWidget(
                             onPressed: () async {
-                              await showDialog(
-                                context: context,
-                                builder: (dialogContext) {
-                                  return Dialog(
-                                    elevation: 0,
-                                    insetPadding: EdgeInsets.zero,
-                                    backgroundColor: Colors.transparent,
-                                    alignment: AlignmentDirectional(0.0, 0.0)
-                                        .resolve(Directionality.of(context)),
-                                    child: GestureDetector(
-                                      onTap: () => _model
-                                              .unfocusNode.canRequestFocus
-                                          ? FocusScope.of(context)
-                                              .requestFocus(_model.unfocusNode)
-                                          : FocusScope.of(context).unfocus(),
-                                      child: ConfirmDialogWidget(),
+                              // Validate form fields before pushing data
+                              if (_model.formKey.currentState!.validate()) {
+                                // Get data from form fields
+                                final String loaiSuCo = _model.dropDownValueController!.toString();
+                                final String vitriP = _model.ageTextController!.text;
+                                final String chiTiet = _model.descriptionTextController!.text;
+                                final bool khanCap = _model.choiceChipsValue == "Khẩn cấp";
+                                // Generate a unique ID for the incident
+                                final String id = Uuid().v4(); // You can use a UUID package
+                                final int ngayBatDau = DateTime.now().millisecondsSinceEpoch;
+                                // Set other fields with appropriate values (e.g., 0 for unprocessed)
+
+                                // Create a SuCo object with the collected data
+                                final SuCo suCo = SuCo(
+                                  id: id,
+                                  loaiSuCo: loaiSuCo,
+                                  vitriP: vitriP,
+                                  chiTiet: chiTiet,
+                                  khanCap: khanCap,
+                                  ngayBatDau: ngayBatDau,
+                                  ngayTiepNhan: 0, // Set to 0 if not received yet
+                                  ngayXuLy: 0, // Set to 0 if not processed yet
+                                  trangThai: "pending", hinhAnh: '', // Set initial state (pending)
+                                );
+                                try {
+                                  final databaseReference = FirebaseDatabase.instance.reference().child("baocao");
+                                  await databaseReference.push().set(suCo.toJson());
+
+                                  // Show a success message or perform further actions after pushing data
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Yêu cầu đã được gửi thành công!'),
+                                      backgroundColor: Colors.green,
                                     ),
                                   );
-                                },
-                              ).then((value) => setState(() {}));
+
+                                  // Reset form (optional)
+                                  _model.formKey.currentState!.reset();
+                                } catch (error) {
+                                  print("Error sending data to Firebase: $error");
+                                }
+
+                              }
                             },
-                            text: 'Gửi yêu cầu',
-                            options: FFButtonOptions(
-                              width: 250.0,
-                              height: 50.0,
-                              padding: EdgeInsetsDirectional.fromSTEB(
-                                  24.0, 0.0, 24.0, 0.0),
-                              iconPadding: EdgeInsetsDirectional.fromSTEB(
-                                  0.0, 0.0, 0.0, 0.0),
-                              color: FlutterFlowTheme.of(context).primary,
-                              textStyle: FlutterFlowTheme.of(context)
-                                  .titleSmall
-                                  .override(
-                                    fontFamily: 'Readex Pro',
-                                    color: Colors.white,
-                                    letterSpacing: 0.0,
-                                  ),
-                              elevation: 3.0,
-                              borderSide: BorderSide(
-                                color: Colors.transparent,
-                                width: 1.0,
-                              ),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
+                            text: 'Xác nhận',
+                            options: FFButtonOptions(),  // Cung cấp văn bản cho nút 'Xác nhận'
                           ),
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
-                            16.0, 12.0, 16.0, 12.0),
+                        padding: EdgeInsetsDirectional.fromSTEB(16.0, 12.0, 16.0, 12.0),
                         child: FFButtonWidget(
                           onPressed: () {
                             print('Button pressed ...');
@@ -619,19 +623,16 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                           options: FFButtonOptions(
                             width: 200.0,
                             height: 50.0,
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                24.0, 0.0, 24.0, 0.0),
-                            iconPadding: EdgeInsetsDirectional.fromSTEB(
-                                0.0, 0.0, 0.0, 0.0),
+                            padding: EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
+                            iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
                             color: FlutterFlowTheme.of(context).alternate,
                             textStyle: FlutterFlowTheme.of(context)
                                 .titleSmall
                                 .override(
-                                  fontFamily: 'Readex Pro',
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  letterSpacing: 0.0,
-                                ),
+                              fontFamily: 'Readex Pro',
+                              color: FlutterFlowTheme.of(context).primaryText,
+                              letterSpacing: 0.0,
+                            ),
                             elevation: 3.0,
                             borderSide: BorderSide(
                               color: FlutterFlowTheme.of(context).primaryText,
@@ -642,8 +643,10 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                         ),
                       ),
                     ],
+
                   ),
                 ),
+
               ],
             ),
           ),
