@@ -567,14 +567,11 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                               // Validate form fields before pushing data
                               if (_model.formKey.currentState!.validate()) {
                                 // Get data from form fields
-                                final String loaiSuCo = _model.dropDownValueController!.toString();
-                                final String vitriP = _model.ageTextController!.text;
+                                final String loaiSuCo = _model.dropDownValueController?.value ?? '';                                final String vitriP = _model.ageTextController!.text;
                                 final String chiTiet = _model.descriptionTextController!.text;
                                 final bool khanCap = _model.choiceChipsValue == "Khẩn cấp";
-                                // Generate a unique ID for the incident
                                 final String id = Uuid().v4(); // You can use a UUID package
                                 final int ngayBatDau = DateTime.now().millisecondsSinceEpoch;
-                                // Set other fields with appropriate values (e.g., 0 for unprocessed)
 
                                 // Create a SuCo object with the collected data
                                 final SuCo suCo = SuCo(
@@ -584,13 +581,26 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                                   chiTiet: chiTiet,
                                   khanCap: khanCap,
                                   ngayBatDau: ngayBatDau,
-                                  ngayTiepNhan: 0, // Set to 0 if not received yet
-                                  ngayXuLy: 0, // Set to 0 if not processed yet
-                                  trangThai: "pending", hinhAnh: '', // Set initial state (pending)
+                                  ngayTiepNhan: 0,
+                                  ngayXuLy: 0,
+                                  trangThai: "pending",
+                                  hinhAnh: '', // Set initial state (pending)
                                 );
+
                                 try {
                                   final databaseReference = FirebaseDatabase.instance.reference().child("baocao");
-                                  await databaseReference.push().set(suCo.toJson());
+                                  await databaseReference.push().set({
+                                    "id": id,
+                                    "loaiSuCo": loaiSuCo,
+                                    "vitriP": vitriP,
+                                    "chiTiet": chiTiet,
+                                    "khanCap": khanCap,
+                                    "ngayBatDau": ngayBatDau,
+                                    "ngayTiepNhan": 0,
+                                    "ngayXuLy": 0,
+                                    "trangThai": "pending",
+                                    "hinhAnh": '',
+                                  });
 
                                   // Show a success message or perform further actions after pushing data
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -605,7 +615,6 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                                 } catch (error) {
                                   print("Error sending data to Firebase: $error");
                                 }
-
                               }
                             },
                             text: 'Xác nhận',

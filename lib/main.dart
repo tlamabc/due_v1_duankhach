@@ -12,7 +12,7 @@ import 'index.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   GoRouter.optionURLReflectsImperativeAPIs = true;
-  usePathUrlStrategy();
+  usePathUrlStrategyhttps://github.com/tlamabc/due_v1_duankhach.git();
 
   await FlutterFlowTheme.initialize();
   await Firebase.initializeApp();
