@@ -567,7 +567,7 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                               // Validate form fields before pushing data
                               if (_model.formKey.currentState!.validate()) {
                                 // Get data from form fields
-                                final String loaiSuCo = _model.dropDownValueController?.value ?? '';                                final String vitriP = _model.ageTextController!.text;
+                                final String loaiSuCo = _model.dropDownValueController?.value ?? '';                                 final String vitriP = _model.ageTextController!.text;
                                 final String chiTiet = _model.descriptionTextController!.text;
                                 final bool khanCap = _model.choiceChipsValue == "Khẩn cấp";
                                 final String id = Uuid().v4(); // You can use a UUID package
