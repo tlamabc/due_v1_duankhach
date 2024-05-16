@@ -1,7 +1,7 @@
-import 'package:due_v1/pages/onboarding/sign_in_user/sign_in_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../c_b_user/c_b_dashboard/c_b_dashboard_model.dart';
 import '../../c_b_user/c_b_dashboard/c_b_dashboard_widget.dart';
+import '../../n_v_user/n_v_dashboard/n_v_dashboard_widget.dart';
 import '/components/custom_appbar/custom_appbar_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -11,58 +11,38 @@ import 'package:provider/provider.dart';
 import 'sign_in_model.dart';
 export 'sign_in_model.dart';
 
-class SignInWidget extends StatefulWidget {
-  const SignInWidget({super.key});
+class SignInUserWidget extends StatefulWidget {
+  const SignInUserWidget({super.key});
 
   @override
-  State<SignInWidget> createState() => _SignInWidgetState();
+  State<SignInUserWidget> createState() => _SignInUserWidgetState();
 }
 
-class _SignInWidgetState extends State<SignInWidget> {
-  late SignInModel _model;
+class _SignInUserWidgetState extends State<SignInUserWidget> {
+  late SignInUserModel _model;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  final String domain = '@cbdue.vn';
 
   @override
   void initState() {
     super.initState();
-    _model = createModel(context, () => SignInModel());
+    _model = createModel(context, () => SignInUserModel());
 
-    _model.emailAddressTextController ??= TextEditingController(text: domain);
+    _model.emailAddressTextController ??= TextEditingController();
     _model.emailAddressFocusNode ??= FocusNode();
 
     _model.passwordTextController ??= TextEditingController();
     _model.passwordFocusNode ??= FocusNode();
-    _model.emailAddressTextController?.addListener(_updateEmailText);
 
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override
   void dispose() {
-    _model.emailAddressTextController?.removeListener(_updateEmailText);
-    _model.emailAddressTextController?.dispose();
-    _model.emailAddressFocusNode?.dispose();
-
-    _model.passwordTextController?.dispose();
-    _model.passwordFocusNode?.dispose();
-
     _model.dispose();
     super.dispose();
   }
-  void _updateEmailText() {
-    final text = _model.emailAddressTextController.text;
-    if (!text.endsWith(domain)) {
-      final newText = text.replaceAll(domain, '') + domain;
-      _model.emailAddressTextController?.value = TextEditingValue(
-        text: newText,
-        selection: TextSelection.fromPosition(
-          TextPosition(offset: newText.length - domain.length),
-        ),
-      );
-    }
-  }
+
   Future<void> _showErrorDialog(String message) async {
     return showDialog<void>(
       context: context,
@@ -172,7 +152,7 @@ class _SignInWidgetState extends State<SignInWidget> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            'Chào Mừng',
+                            'Chào Mừng User',
                             textAlign: TextAlign.center,
                             style: FlutterFlowTheme.of(context)
                                 .displaySmall
@@ -194,7 +174,8 @@ class _SignInWidgetState extends State<SignInWidget> {
                                 letterSpacing: 0.0,
                               ),
                             ),
-                          ), Padding(
+                          ),
+                          Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(
                                 0.0, 0.0, 0.0, 16.0),
                             child: Container(
@@ -365,7 +346,7 @@ class _SignInWidgetState extends State<SignInWidget> {
                                   // Navigate to the dashboard on successful sign-in
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => CBDashboardWidget()),
+                                    MaterialPageRoute(builder: (context) => NVDashboardWidget()),
                                   );
                                 } on FirebaseAuthException catch (e) {
                                   if (e.code == 'user-not-found') {
@@ -378,7 +359,7 @@ class _SignInWidgetState extends State<SignInWidget> {
                                 }
                               },
 
-                              text: 'Đăng Nhập',
+                              text: 'Đăng Nhập với tư cách User',
                               options: FFButtonOptions(
                                 width: double.infinity,
                                 height: 44.0,
@@ -413,24 +394,8 @@ class _SignInWidgetState extends State<SignInWidget> {
                               focusColor: Colors.transparent,
                               hoverColor: Colors.transparent,
                               highlightColor: Colors.transparent,
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text('Thông báo'),
-                                      content: Text('Vui lòng liên hệ admin để cấp lại tài khoản đối với Cán bộ'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          child: Text('OK'),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
+                              onTap: () async {
+                                context.pushNamed('ResetPassword');
                               },
                               child: RichText(
                                 textScaler: MediaQuery.of(context).textScaler,
@@ -438,48 +403,6 @@ class _SignInWidgetState extends State<SignInWidget> {
                                   children: [
                                     TextSpan(
                                       text: 'Quên mật khẩu',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .override(
-                                        fontFamily: 'Readex Pro',
-                                        color: FlutterFlowTheme.of(context)
-                                            .primary,
-                                        fontSize: 15.0,
-                                        letterSpacing: 0.0,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    )
-                                  ],
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                    fontFamily: 'Readex Pro',
-                                    letterSpacing: 0.0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                0.0, 12.0, 0.0, 12.0),
-                            child: InkWell(
-                              splashColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onTap: () async {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => SignInUserWidget()),
-                                );
-                              },
-                              child: RichText(
-                                textScaler: MediaQuery.of(context).textScaler,
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: 'Đăng nhập với tư cách là user',
                                       style: FlutterFlowTheme.of(context)
                                           .bodyMedium
                                           .override(

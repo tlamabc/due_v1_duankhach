@@ -5,6 +5,7 @@ import '/flutter_flow/flutter_flow_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'account_profile_model.dart';
 export 'account_profile_model.dart';
 
@@ -17,6 +18,7 @@ class AccountProfileWidget extends StatefulWidget {
 
 class _AccountProfileWidgetState extends State<AccountProfileWidget> {
   late AccountProfileModel _model;
+  User? currentUser;
 
   @override
   void setState(VoidCallback callback) {
@@ -30,6 +32,12 @@ class _AccountProfileWidgetState extends State<AccountProfileWidget> {
     _model = createModel(context, () => AccountProfileModel());
 
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    fetchCurrentUser();
+  }
+
+  void fetchCurrentUser() {
+    currentUser = FirebaseAuth.instance.currentUser;
+    setState(() {});
   }
 
   @override
@@ -73,8 +81,7 @@ class _AccountProfileWidgetState extends State<AccountProfileWidget> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     Padding(
-                      padding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 12.0, 0.0),
+                      padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 12.0, 0.0),
                       child: Container(
                         width: 50.0,
                         height: 50.0,
@@ -101,37 +108,31 @@ class _AccountProfileWidgetState extends State<AccountProfileWidget> {
                       ),
                     ),
                     Padding(
-                      padding:
-                          EdgeInsetsDirectional.fromSTEB(4.0, 0.0, 0.0, 0.0),
+                      padding: EdgeInsetsDirectional.fromSTEB(4.0, 0.0, 0.0, 0.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Cán Bộ 1',
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  fontFamily: 'Readex Pro',
-                                  fontSize: 16.0,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            'Email Account:',
+                            style: FlutterFlowTheme.of(context).bodyMedium.override(
+                              fontFamily: 'Readex Pro',
+                              fontSize: 16.0,
+                              letterSpacing: 0.0,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                0.0, 4.0, 0.0, 0.0),
+                            padding: EdgeInsetsDirectional.fromSTEB(0.0, 4.0, 0.0, 0.0),
                             child: Text(
-                              'canbo@gmail.com',
-                              style: FlutterFlowTheme.of(context)
-                                  .bodySmall
-                                  .override(
-                                    fontFamily: 'Readex Pro',
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    fontSize: 14.0,
-                                    letterSpacing: 0.0,
-                                  ),
+                              currentUser?.email ?? 'Loading...',
+                              style: FlutterFlowTheme.of(context).bodySmall.override(
+                                fontFamily: 'Readex Pro',
+                                color: FlutterFlowTheme.of(context).primary,
+                                fontSize: 14.0,
+                                letterSpacing: 0.0,
+                              ),
                             ),
                           ),
                         ],
