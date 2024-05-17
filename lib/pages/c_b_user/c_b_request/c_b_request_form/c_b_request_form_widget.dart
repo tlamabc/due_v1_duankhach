@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:uuid/uuid.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../../../suco.dart';
 import '/components/confirm_dialog/confirm_dialog_widget.dart';
@@ -26,7 +27,10 @@ class CBRequestFormWidget extends StatefulWidget {
 
 class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
   late CBRequestFormModel _model;
+  bool isDataUploading = false;
+  String? uploadedFileUrl;
 
+  bool isLoading = false;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -46,9 +50,57 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
   @override
   void dispose() {
     _model.dispose();
-
     super.dispose();
   }
+  Future<String?> uploadImageToFirebase() async {
+    final selectedMedia = await selectMediaWithSourceBottomSheet(
+      context: context,
+      allowPhoto: true,
+    );
+
+    if (selectedMedia != null &&
+        selectedMedia.every((m) => validateFileFormat(m.storagePath, context))) {
+      setState(() {
+        isLoading = true;
+        isDataUploading = true;
+      });
+
+      try {
+        final m = selectedMedia.first; // Assuming only one image is selected
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('uploads/${m.storagePath.split('/').last}');
+        final uploadTask = storageRef.putData(m.bytes!);
+
+        final snapshot = await uploadTask.whenComplete(() {});
+        final downloadUrl = await snapshot.ref.getDownloadURL();
+
+        setState(() {
+          uploadedFileUrl = downloadUrl;
+        });
+      } catch (error) {
+        print("Error uploading image: $error");
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+  //
+  //       return downloadUrl;
+  //     } catch (e) {
+  //       print("Error uploading image: $e");
+  //       setState(() {
+  //         isLoading = false;
+  //         isDataUploading = false;
+  //       });
+  //       return null;
+  //     }
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -444,47 +496,7 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                                     hoverColor: Colors.transparent,
                                     highlightColor: Colors.transparent,
                                     onTap: () async {
-                                      final selectedMedia =
-                                          await selectMediaWithSourceBottomSheet(
-                                        context: context,
-                                        allowPhoto: true,
-                                      );
-                                      if (selectedMedia != null &&
-                                          selectedMedia.every((m) =>
-                                              validateFileFormat(
-                                                  m.storagePath, context))) {
-                                        setState(() =>
-                                            _model.isDataUploading = true);
-                                        var selectedUploadedFiles =
-                                            <FFUploadedFile>[];
-
-                                        try {
-                                          selectedUploadedFiles = selectedMedia
-                                              .map((m) => FFUploadedFile(
-                                                    name: m.storagePath
-                                                        .split('/')
-                                                        .last,
-                                                    bytes: m.bytes,
-                                                    height:
-                                                        m.dimensions?.height,
-                                                    width: m.dimensions?.width,
-                                                    blurHash: m.blurHash,
-                                                  ))
-                                              .toList();
-                                        } finally {
-                                          _model.isDataUploading = false;
-                                        }
-                                        if (selectedUploadedFiles.length ==
-                                            selectedMedia.length) {
-                                          setState(() {
-                                            _model.uploadedLocalFile =
-                                                selectedUploadedFiles.first;
-                                          });
-                                        } else {
-                                          setState(() {});
-                                          return;
-                                        }
-                                      }
+                                      await uploadImageToFirebase();
                                     },
                                     child: Container(
                                       width: double.infinity,
@@ -492,13 +504,10 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                                         maxWidth: 500.0,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: FlutterFlowTheme.of(context)
-                                            .secondaryBackground,
-                                        borderRadius:
-                                            BorderRadius.circular(12.0),
+                                        color: FlutterFlowTheme.of(context).secondaryBackground,
+                                        borderRadius: BorderRadius.circular(12.0),
                                         border: Border.all(
-                                          color: FlutterFlowTheme.of(context)
-                                              .alternate,
+                                          color: FlutterFlowTheme.of(context).alternate,
                                           width: 2.0,
                                         ),
                                       ),
@@ -509,30 +518,20 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                                           children: [
                                             Icon(
                                               Icons.add_a_photo_rounded,
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primary,
+                                              color: FlutterFlowTheme.of(context).primary,
                                               size: 32.0,
                                             ),
                                             Padding(
-                                              padding: EdgeInsetsDirectional
-                                                  .fromSTEB(
-                                                      16.0, 0.0, 0.0, 0.0),
+                                              padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 0.0, 0.0),
                                               child: Text(
                                                 'Tải ảnh lên',
                                                 textAlign: TextAlign.center,
-                                                style: FlutterFlowTheme.of(
-                                                        context)
-                                                    .bodyMedium
-                                                    .override(
-                                                      fontFamily: 'Readex Pro',
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .primaryText,
-                                                      fontSize: 16.0,
-                                                      letterSpacing: 0.0,
-                                                    ),
+                                                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                  fontFamily: 'Readex Pro',
+                                                  color: FlutterFlowTheme.of(context).primaryText,
+                                                  fontSize: 16.0,
+                                                  letterSpacing: 0.0,
+                                                ),
                                               ),
                                             ),
                                           ],
@@ -540,6 +539,16 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                                       ),
                                     ),
                                   ),
+                                  if (isLoading)
+                                    Padding(
+                                      padding: EdgeInsets.only(top: 16.0),
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  if (_model.uploadedLocalFile != null)
+                                    Padding(
+                                      padding: EdgeInsets.only(top: 16.0),
+                                      child: Text('Image uploaded: ${_model.uploadedLocalFile!.name}'),
+                                    ),
                                 ]
                                     .divide(SizedBox(height: 16.0))
                                     .addToEnd(SizedBox(height: 32.0)),
@@ -574,18 +583,18 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                                 final int ngayBatDau = DateTime.now().millisecondsSinceEpoch;
 
                                 // Create a SuCo object with the collected data
-                                final SuCo suCo = SuCo(
-                                  id: id,
-                                  loaiSuCo: loaiSuCo,
-                                  vitriP: vitriP,
-                                  chiTiet: chiTiet,
-                                  khanCap: khanCap,
-                                  ngayBatDau: ngayBatDau,
-                                  ngayTiepNhan: 0,
-                                  ngayXuLy: 0,
-                                  trangThai: "pending",
-                                  hinhAnh: '', // Set initial state (pending)
-                                );
+                                // final SuCo suCo = SuCo(
+                                //   id: id,
+                                //   loaiSuCo: loaiSuCo,
+                                //   vitriP: vitriP,
+                                //   chiTiet: chiTiet,
+                                //   khanCap: khanCap,
+                                //   ngayBatDau: ngayBatDau,
+                                //   ngayTiepNhan: 0,
+                                //   ngayXuLy: 0,
+                                //   trangThai: "pending",
+                                //   hinhAnh: imageUrl,
+                                // );
 
                                 try {
                                   final databaseReference = FirebaseDatabase.instance.reference().child("baocao");
@@ -599,10 +608,10 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                                     "ngayTiepNhan": 0,
                                     "ngayXuLy": 0,
                                     "trangThai": "pending",
-                                    "hinhAnh": '',
+                                    "hinhAnh": uploadedFileUrl ?? '',
                                   });
 
-                                  // Show a success message or perform further actions after pushing data
+
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text('Yêu cầu đã được gửi thành công!'),
@@ -610,7 +619,6 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                                     ),
                                   );
 
-                                  // Reset form (optional)
                                   _model.formKey.currentState!.reset();
                                 } catch (error) {
                                   print("Error sending data to Firebase: $error");
