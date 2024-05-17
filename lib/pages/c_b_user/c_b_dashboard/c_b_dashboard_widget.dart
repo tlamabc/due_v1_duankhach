@@ -1,3 +1,6 @@
+import 'package:firebase_database/firebase_database.dart';
+
+import '../../../suco.dart';
 import '/components/account_profile/account_profile_widget.dart';
 import '/components/custom_menu/custom_menu_widget.dart';
 import '/components/list_report_done/list_report_done_widget.dart';
@@ -22,6 +25,8 @@ class _CBDashboardWidgetState extends State<CBDashboardWidget> {
   late CBDashboardModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  List<SuCo> _suCoList = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -29,6 +34,38 @@ class _CBDashboardWidgetState extends State<CBDashboardWidget> {
     _model = createModel(context, () => CBDashboardModel());
 
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    _fetchReports();
+
+    // Lắng nghe sự kiện thay đổi trên Firebase
+    final databaseReference = FirebaseDatabase.instance.ref().child('baocao');
+    databaseReference.onValue.listen((event) {
+      if (event.snapshot.value != null) {
+        final Map<dynamic, dynamic> reports = event.snapshot.value as Map<dynamic, dynamic>;
+        List<SuCo> updatedList = [];
+        reports.forEach((key, value) {
+          updatedList.add(SuCo.fromJson(Map<String, dynamic>.from(value)));
+        });
+        setState(() {
+          _suCoList = updatedList;
+        });
+      }
+    });
+  }
+
+  Future<void> _fetchReports() async {
+    final databaseReference = FirebaseDatabase.instance.ref().child('baocao');
+    final snapshot = await databaseReference.once();
+
+    if (snapshot.snapshot.value != null) {
+      final Map<dynamic, dynamic> reports = snapshot.snapshot.value as Map<dynamic, dynamic>;
+      reports.forEach((key, value) {
+        _suCoList.add(SuCo.fromJson(Map<String, dynamic>.from(value)));
+      });
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -112,95 +149,63 @@ class _CBDashboardWidgetState extends State<CBDashboardWidget> {
           elevation: 2.0,
         ),
         body: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                child: Row(
                   children: [
-                    Align(
+                    Container(
+                      width: 150.0,
+                      height: 40.0,
+                      decoration: BoxDecoration(
+                        color: Color(0xFF5240F4),
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
                       alignment: AlignmentDirectional(0.0, 0.0),
-                      child: Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
-                            18.0, 18.0, 18.0, 0.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 150.0,
-                              height: 40.0,
-                              decoration: BoxDecoration(
-                                color: Color(0xFF5240F4),
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              alignment: AlignmentDirectional(0.0, 0.0),
-                              child: Text(
-                                'Danh sách sự cố',
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryBackground,
-                                      letterSpacing: 0.0,
-                                    ),
-                              ),
-                            ),
-                            Expanded(
-                              child: wrapWithModel(
-                                model: _model.customMenuModel,
-                                updateCallback: () => setState(() {}),
-                                child: CustomMenuWidget(),
-                              ),
-                            ),
-                          ],
+                      child: Text(
+                        'Danh sách sự cố',
+                        style: FlutterFlowTheme.of(context)
+                            .bodyMedium
+                            .override(
+                          fontFamily: 'Readex Pro',
+                          color: FlutterFlowTheme.of(context)
+                              .secondaryBackground,
+                          letterSpacing: 0.0,
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.all(18.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          InkWell(
-                            splashColor: Colors.transparent,
-                            focusColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () async {
-                              context.pushNamed('CB_DetailForm');
-                            },
-                            child: wrapWithModel(
-                              model: _model.listReportDoneModel1,
-                              updateCallback: () => setState(() {}),
-                              child: ListReportDoneWidget(),
-                            ),
-                          ),
-                          wrapWithModel(
-                            model: _model.listReportDoneModel2,
-                            updateCallback: () => setState(() {}),
-                            child: ListReportDoneWidget(),
-                          ),
-                          wrapWithModel(
-                            model: _model.listReportDoneModel3,
-                            updateCallback: () => setState(() {}),
-                            child: ListReportDoneWidget(),
-                          ),
-                          wrapWithModel(
-                            model: _model.listReportDoneModel4,
-                            updateCallback: () => setState(() {}),
-                            child: ListReportDoneWidget(),
-                          ),
-                        ].divide(SizedBox(height: 15.0)),
+                    Expanded(
+                      child: wrapWithModel(
+                        model: _model.customMenuModel,
+                        updateCallback: () => setState(() {}),
+                        child: CustomMenuWidget(),
                       ),
                     ),
                   ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                child: _isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : Padding(
+                  padding: EdgeInsets.all(18.0),
+                  child: ListView.builder(
+                    itemCount: _suCoList.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 15.0),
+                        child: GestureDetector(
+                          onTap: () async {
+                            context.pushNamed('CB_DetailForm');
+                          },
+                          child: ListReportDoneWidget(suCo: _suCoList[index]),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),

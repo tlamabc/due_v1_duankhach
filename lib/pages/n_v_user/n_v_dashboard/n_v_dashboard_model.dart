@@ -14,32 +14,32 @@ class NVDashboardModel extends FlutterFlowModel<NVDashboardWidget> {
 
   final unfocusNode = FocusNode();
   // Model for listReport_Done component.
-  late ListReportDoneModel listReportDoneModel1;
-  // Model for listReport_Done component.
-  late ListReportDoneModel listReportDoneModel2;
-  // Model for listReport_Done component.
-  late ListReportDoneModel listReportDoneModel3;
-  // Model for listReport_Done component.
-  late ListReportDoneModel listReportDoneModel4;
+  // late ListReportDoneModel listReportDoneModel1;
+  // // Model for listReport_Done component.
+  // late ListReportDoneModel listReportDoneModel2;
+  // // Model for listReport_Done component.
+  // late ListReportDoneModel listReportDoneModel3;
+  // // Model for listReport_Done component.
+  // late ListReportDoneModel listReportDoneModel4;
   // Model for accountProfile component.
   late AccountProfileModel accountProfileModel;
 
   @override
   void initState(BuildContext context) {
-    listReportDoneModel1 = createModel(context, () => ListReportDoneModel());
-    listReportDoneModel2 = createModel(context, () => ListReportDoneModel());
-    listReportDoneModel3 = createModel(context, () => ListReportDoneModel());
-    listReportDoneModel4 = createModel(context, () => ListReportDoneModel());
+    // listReportDoneModel1 = createModel(context, () => ListReportDoneModel());
+    // listReportDoneModel2 = createModel(context, () => ListReportDoneModel());
+    // listReportDoneModel3 = createModel(context, () => ListReportDoneModel());
+    // listReportDoneModel4 = createModel(context, () => ListReportDoneModel());
     accountProfileModel = createModel(context, () => AccountProfileModel());
   }
 
   @override
   void dispose() {
     unfocusNode.dispose();
-    listReportDoneModel1.dispose();
-    listReportDoneModel2.dispose();
-    listReportDoneModel3.dispose();
-    listReportDoneModel4.dispose();
+    // listReportDoneModel1.dispose();
+    // listReportDoneModel2.dispose();
+    // listReportDoneModel3.dispose();
+    // listReportDoneModel4.dispose();
     accountProfileModel.dispose();
   }
 }

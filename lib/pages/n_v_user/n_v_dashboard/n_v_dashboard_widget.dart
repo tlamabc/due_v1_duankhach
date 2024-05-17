@@ -1,14 +1,15 @@
-import '/components/account_profile/account_profile_widget.dart';
-import '/components/list_report_done/list_report_done_widget.dart';
-import '/flutter_flow/flutter_flow_icon_button.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
-import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
+import 'package:due_v1/flutter_flow/flutter_flow_util.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
+import '../../../components/account_profile/account_profile_widget.dart';
+import '../../../components/list_report_done/list_report_done_widget.dart';
+import '../../../flutter_flow/flutter_flow_icon_button.dart';
+import '../../../flutter_flow/flutter_flow_model.dart';
+import '../../../flutter_flow/flutter_flow_theme.dart';
+import '../../../flutter_flow/flutter_flow_widgets.dart';
+import '../../../suco.dart';
 import 'n_v_dashboard_model.dart';
-export 'n_v_dashboard_model.dart';
+
 
 class NVDashboardWidget extends StatefulWidget {
   const NVDashboardWidget({super.key});
@@ -19,21 +20,37 @@ class NVDashboardWidget extends StatefulWidget {
 
 class _NVDashboardWidgetState extends State<NVDashboardWidget> {
   late NVDashboardModel _model;
-
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  List<SuCo> _suCoList = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => NVDashboardModel());
-
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    _fetchReports();
+  }
+  Future<void> _fetchReports() async {
+    final databaseReference = FirebaseDatabase.instance.ref().child('baocao');
+    final snapshot = await databaseReference.once();
+
+    if (snapshot.snapshot.value != null) {
+      final Map<dynamic, dynamic> reports = snapshot.snapshot.value as Map<dynamic, dynamic>;
+      reports.forEach((key, value) {
+        _suCoList.add(SuCo.fromJson(Map<String, dynamic>.from(value)));
+      });
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
   void dispose() {
     _model.dispose();
-
     super.dispose();
   }
 
@@ -93,10 +110,10 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
                 iconPadding: EdgeInsets.all(0.0),
                 color: FlutterFlowTheme.of(context).alternate,
                 textStyle: FlutterFlowTheme.of(context).headlineMedium.override(
-                      fontFamily: 'Outfit',
-                      color: Colors.white,
-                      letterSpacing: 0.0,
-                    ),
+                  fontFamily: 'Outfit',
+                  color: Colors.white,
+                  letterSpacing: 0.0,
+                ),
                 elevation: 3.0,
                 borderSide: BorderSide(
                   color: Colors.transparent,
@@ -111,119 +128,34 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
           centerTitle: true,
           elevation: 2.0,
         ),
-        body: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Align(
-                      alignment: AlignmentDirectional(0.0, 0.0),
-                      child: Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
-                            18.0, 18.0, 18.0, 0.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 150.0,
-                              height: 40.0,
-                              decoration: BoxDecoration(
-                                color: Color(0xFF5240F4),
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              alignment: AlignmentDirectional(0.0, 0.0),
-                              child: Text(
-                                'Danh sách sự cố',
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryBackground,
-                                      letterSpacing: 0.0,
-                                    ),
-                              ),
-                            ),
-                            FlutterFlowIconButton(
-                              borderColor: FlutterFlowTheme.of(context)
-                                  .secondaryBackground,
-                              borderRadius: 24.0,
-                              borderWidth: 1.0,
-                              buttonSize: 40.0,
-                              fillColor: FlutterFlowTheme.of(context)
-                                  .secondaryBackground,
-                              icon: Icon(
-                                Icons.filter_alt,
-                                color: FlutterFlowTheme.of(context).primaryText,
-                                size: 18.0,
-                              ),
-                              onPressed: () {
-                                print('IconButton pressed ...');
-                              },
-                            ),
-                          ],
+        body: Container(
+          child: _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : Padding(
+            padding: EdgeInsets.all(18.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _suCoList.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 15.0),
+                        child: GestureDetector(
+                          onTap: () async {
+                            context.pushNamed('CB_DetailForm');
+                          },
+                          child: ListReportDoneWidget(suCo: _suCoList[index]),
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(18.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          InkWell(
-                            splashColor: Colors.transparent,
-                            focusColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () async {
-                              context.pushNamed('NV_OrderForm');
-                            },
-                            child: wrapWithModel(
-                              model: _model.listReportDoneModel1,
-                              updateCallback: () => setState(() {}),
-                              child: ListReportDoneWidget(),
-                            ),
-                          ),
-                          InkWell(
-                            splashColor: Colors.transparent,
-                            focusColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () async {
-                              context.pushNamed('NV_LogForm');
-                            },
-                            child: wrapWithModel(
-                              model: _model.listReportDoneModel2,
-                              updateCallback: () => setState(() {}),
-                              child: ListReportDoneWidget(),
-                            ),
-                          ),
-                          wrapWithModel(
-                            model: _model.listReportDoneModel3,
-                            updateCallback: () => setState(() {}),
-                            child: ListReportDoneWidget(),
-                          ),
-                          wrapWithModel(
-                            model: _model.listReportDoneModel4,
-                            updateCallback: () => setState(() {}),
-                            child: ListReportDoneWidget(),
-                          ),
-                        ].divide(SizedBox(height: 15.0)),
-                      ),
-                    ),
-                  ],
+                      );
+                    },
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
