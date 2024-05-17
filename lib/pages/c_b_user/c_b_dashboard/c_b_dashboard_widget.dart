@@ -197,12 +197,7 @@ class _CBDashboardWidgetState extends State<CBDashboardWidget> {
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 15.0),
-                        child: GestureDetector(
-                          onTap: () async {
-                            context.pushNamed('CB_DetailForm');
-                          },
-                          child: ListReportDoneWidget(suCo: _suCoList[index]),
-                        ),
+                        child: ListReportDoneWidget(suCo: _suCoList[index]),
                       );
                     },
                   ),

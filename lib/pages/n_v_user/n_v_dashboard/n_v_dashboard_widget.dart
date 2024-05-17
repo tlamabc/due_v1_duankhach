@@ -1,4 +1,6 @@
+import 'package:due_v1/components/list_report_progress/list_report_progress_widget.dart';
 import 'package:due_v1/flutter_flow/flutter_flow_util.dart';
+import 'package:due_v1/index.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../../../components/account_profile/account_profile_widget.dart';
@@ -34,17 +36,25 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
   }
   Future<void> _fetchReports() async {
     final databaseReference = FirebaseDatabase.instance.ref().child('baocao');
-    final snapshot = await databaseReference.once();
 
-    if (snapshot.snapshot.value != null) {
-      final Map<dynamic, dynamic> reports = snapshot.snapshot.value as Map<dynamic, dynamic>;
-      reports.forEach((key, value) {
-        _suCoList.add(SuCo.fromJson(Map<String, dynamic>.from(value)));
+    // Sử dụng phương thức .onValue để lắng nghe sự thay đổi trong dữ liệu
+    databaseReference.onValue.listen((event) {
+      final snapshot = event.snapshot;
+
+      if (snapshot.value != null) {
+        final Map<dynamic, dynamic> reports = snapshot.value as Map<dynamic, dynamic>;
+        // Xóa dữ liệu cũ trước khi cập nhật
+        _suCoList.clear();
+        // Cập nhật danh sách với dữ liệu mới từ Firebase
+        reports.forEach((key, value) {
+          _suCoList.add(SuCo.fromJson(Map<String, dynamic>.from(value)));
+        });
+      }
+
+      // Cập nhật trạng thái và gọi setState để rebuild UI
+      setState(() {
+        _isLoading = false;
       });
-    }
-
-    setState(() {
-      _isLoading = false;
     });
   }
 
@@ -145,9 +155,12 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
                         padding: const EdgeInsets.only(bottom: 15.0),
                         child: GestureDetector(
                           onTap: () async {
-                            context.pushNamed('CB_DetailForm');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => NVLogFormWidget()),
+                            );
                           },
-                          child: ListReportDoneWidget(suCo: _suCoList[index]),
+                          child: ListReportProgressWidget(suCo: _suCoList[index]),
                         ),
                       );
                     },

@@ -1,289 +1,170 @@
-import '/flutter_flow/flutter_flow_theme.dart';
-import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
-import 'package:flutter/gestures.dart';
+import 'package:due_v1/flutter_flow/flutter_flow_theme.dart';
+import 'package:due_v1/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'list_report_progress_model.dart';
-export 'list_report_progress_model.dart';
+import '../../suco.dart';
+import 'package:intl/intl.dart';
 
-class ListReportProgressWidget extends StatefulWidget {
-  const ListReportProgressWidget({super.key});
+class ListReportProgressWidget extends StatelessWidget {
+  final SuCo suCo;
 
-  @override
-  State<ListReportProgressWidget> createState() =>
-      _ListReportProgressWidgetState();
-}
+  ListReportProgressWidget({required this.suCo});
 
-class _ListReportProgressWidgetState extends State<ListReportProgressWidget> {
-  late ListReportProgressModel _model;
-
-  @override
-  void setState(VoidCallback callback) {
-    super.setState(callback);
-    _model.onUpdate();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _model = createModel(context, () => ListReportProgressModel());
-
-    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
-  }
-
-  @override
-  void dispose() {
-    _model.maybeDispose();
-
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
+    String formatDateTime(int timestamp) {
+      var date = DateTime.fromMillisecondsSinceEpoch(timestamp);
+      var formattedDate = DateFormat('HH:mm MM/dd/yyyy').format(date);
+      return formattedDate;
+    }
+
     return Container(
-      height: 150.0,
-      constraints: BoxConstraints(
-        maxWidth: 470.0,
-      ),
+      padding: EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        color: FlutterFlowTheme.of(context).secondaryBackground,
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8.0),
         boxShadow: [
           BoxShadow(
-            blurRadius: 0.0,
-            color: Color(0xFFE0E3E7),
-            offset: Offset(
-              0.0,
-              1.0,
-            ),
-          )
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: Offset(0, 3), // changes position of shadow
+          ),
         ],
-        borderRadius: BorderRadius.circular(15.0),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            children: [
+              Text(
+                "Sự cố: ",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              Text(
+                suCo.loaiSuCo,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            ],
+          ),
+          SizedBox(height: 8),
+          Padding(
+            padding: EdgeInsets.only(left: 16),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      "Vị Trí: ",
+                    ),
+                    Text(suCo.vitriP),
+                  ],
+                ),
+                SizedBox(height: 4.0),
+                Row(
+                  children: [
+                    Text(
+                      "Tình Trạng: ",
+                    ),
+                    Text(
+                      suCo.khanCap ? 'Khẩn cấp' : 'Bình thường',
+                    ),
+                  ],
+                ),
+                SizedBox(height: 4.0),
+                Row(
+                  children: [
+                    Text(
+                      "Ngày tạo: ",
+                    ),
+                    Text(formatDateTime(suCo.ngayBatDau)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Row(
+            children: [
+              Row(
                 children: [
-                  RichText(
-                    textScaler: MediaQuery.of(context).textScaler,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Sự cố: ',
-                          style: FlutterFlowTheme.of(context)
-                              .bodyMedium
-                              .override(
-                                fontFamily: 'Readex Pro',
-                                color: FlutterFlowTheme.of(context).primaryText,
-                                fontSize: 18.0,
-                                letterSpacing: 0.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ),
-                        TextSpan(
-                          text: 'Điện ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18.0,
-                          ),
-                        )
-                      ],
-                      style: FlutterFlowTheme.of(context).bodyMedium.override(
-                            fontFamily: 'Readex Pro',
-                            fontSize: 18.0,
-                            letterSpacing: 0.0,
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsetsDirectional.fromSTEB(20.0, 0.0, 0.0, 0.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        RichText(
-                          textScaler: MediaQuery.of(context).textScaler,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Vị trí: ',
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText,
-                                      letterSpacing: 0.0,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                              ),
-                              TextSpan(
-                                text: 'H203',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              )
-                            ],
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  fontFamily: 'Readex Pro',
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryText,
-                                  letterSpacing: 0.0,
-                                ),
-                          ),
-                        ),
-                        RichText(
-                          textScaler: MediaQuery.of(context).textScaler,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Ngày tạo: ',
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText,
-                                      letterSpacing: 0.0,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                              ),
-                              TextSpan(
-                                text: '01/05/2024',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              )
-                            ],
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  fontFamily: 'Readex Pro',
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryText,
-                                  letterSpacing: 0.0,
-                                ),
-                          ),
-                          textAlign: TextAlign.start,
-                        ),
-                        RichText(
-                          textScaler: MediaQuery.of(context).textScaler,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Loại: ',
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText,
-                                      letterSpacing: 0.0,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                              ),
-                              TextSpan(
-                                text: 'Khẩn cấp',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14.0,
-                                ),
-                              )
-                            ],
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  fontFamily: 'Readex Pro',
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryText,
-                                  letterSpacing: 0.0,
-                                ),
-                          ),
-                          textAlign: TextAlign.start,
-                        ),
-                      ].divide(SizedBox(height: 5.0)),
-                    ),
-                  ),
-                  Divider(
-                    thickness: 2.0,
-                    color: FlutterFlowTheme.of(context).primary,
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: 120.0,
-                        height: 30.0,
-                        decoration: BoxDecoration(
-                          color: Color(0xDEECAD00),
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        child: Align(
-                          alignment: AlignmentDirectional(0.0, 0.0),
-                          child: Text(
-                            'Đang xử lý',
-                            textAlign: TextAlign.center,
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  fontFamily: 'Roboto',
-                                  color: FlutterFlowTheme.of(context)
-                                      .primaryBackground,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                        ),
-                      ),
-                      FFButtonWidget(
-                        onPressed: () {
-                          print('Button pressed ...');
-                        },
-                        text: 'Chi tiết',
-                        options: FFButtonOptions(
-                          width: 120.0,
-                          height: 30.0,
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              24.0, 0.0, 24.0, 0.0),
-                          iconPadding: EdgeInsetsDirectional.fromSTEB(
-                              0.0, 0.0, 0.0, 0.0),
-                          color: FlutterFlowTheme.of(context).alternate,
-                          textStyle:
-                              FlutterFlowTheme.of(context).titleSmall.override(
-                                    fontFamily: 'Readex Pro',
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    fontSize: 14.0,
-                                    letterSpacing: 0.0,
-                                  ),
-                          elevation: 3.0,
-                          borderSide: BorderSide(
-                            color: Colors.transparent,
-                            width: 1.0,
-                          ),
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
+                  if (suCo.trangThai == 'a')
+                    _buildStatusContainer('Tiếp nhận', Colors.amber),
+                  if (suCo.trangThai == 'b')
+                    _buildStatusContainer('Đang sử lý', Colors.blue),
+                  if (suCo.trangThai == 'c')
+                    _buildStatusContainer('Hoàn thành', Colors.green),
+                  if (suCo.trangThai == 'd')
+                    _buildStatusContainer('Xử lý lỗi', Colors.red),
+                ],
+
+              ),
+              Expanded(child: Container()),
+              GestureDetector(
+                onTap: () async {
+                  context.pushNamed('CB_DetailForm');
+                },
+                child: Container(
+                  margin: EdgeInsets.only(right: 15, top: 10),
+                  padding: EdgeInsets.only(left:10,right: 5),
+                  height: 30.0,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFA0CCFD),
+                    borderRadius: BorderRadius.circular(20.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: Offset(2, 2), // changes position of shadow
                       ),
                     ],
                   ),
-                ],
+                  alignment: AlignmentDirectional(0.0, 0.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Chi tiết',
+                        style: TextStyle(color: Colors.blueAccent,fontSize: 12),
+                      ),
+                      SizedBox(width: 5), // khoảng cách giữa văn bản và biểu tượng
+                      Icon(
+                        Icons.arrow_forward, // biểu tượng bạn muốn sử dụng
+                        color: Colors.blueAccent, // màu của biểu tượng
+                        size: 16, // kích thước của biểu tượng
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),
     );
   }
+}
+Widget _buildStatusContainer(String statusText, Color color) {
+  return Container(
+    margin: EdgeInsets.only(left: 15, top: 10),
+    padding: EdgeInsets.only(left: 15,right: 15),
+    height: 30.0,
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(20.0),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.2),
+          spreadRadius: 2,
+          blurRadius: 5,
+          offset: Offset(2, 2),
+        ),
+      ],
+    ),
+    alignment: AlignmentDirectional(0.0, 0.0),
+    child: Text(
+      statusText,
+      style: TextStyle(color: Colors.white,fontSize: 12),
+    ),
+  );
 }
