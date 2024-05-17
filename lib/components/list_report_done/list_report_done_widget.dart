@@ -88,9 +88,9 @@ class ListReportDoneWidget extends StatelessWidget {
               Row(
                 children: [
                   if (suCo.trangThai == 'a')
-                    _buildStatusContainer('Chờ sử lý', Colors.amber),
+                    _buildStatusContainer('Chờ tiếp nhận', Colors.amber),
                   if (suCo.trangThai == 'b')
-                    _buildStatusContainer('Đang sử lý', Colors.blue),
+                    _buildStatusContainer('Đang xử lý', Colors.blue),
                   if (suCo.trangThai == 'c')
                     _buildStatusContainer('Đã xử lý', Colors.green),
                   if (suCo.trangThai == 'd')

@@ -607,7 +607,7 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                                     "ngayBatDau": ngayBatDau,
                                     "ngayTiepNhan": 0,
                                     "ngayXuLy": 0,
-                                    "trangThai": "pending",
+                                    "trangThai": "a",
                                     "hinhAnh": uploadedFileUrl ?? '',
                                   });
 
