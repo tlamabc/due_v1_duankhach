@@ -1,8 +1,8 @@
-import 'package:due_v1/flutter_flow/flutter_flow_util.dart';
 import 'package:due_v1/index.dart';
 import 'package:flutter/material.dart';
 import '../../suco.dart';
 import 'package:intl/intl.dart';
+
 class ListReportDoneWidget extends StatelessWidget {
   final SuCo suCo;
 
@@ -52,21 +52,29 @@ class ListReportDoneWidget extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text("Vị Trí: "),
+                    Text(
+                      "Vị Trí: ",
+                    ),
                     Text(suCo.vitriP),
                   ],
                 ),
                 SizedBox(height: 4.0),
                 Row(
                   children: [
-                    Text("Tình Trạng: "),
-                    Text(suCo.khanCap ? 'Khẩn cấp' : 'Bình thường'),
+                    Text(
+                      "Tình Trạng: ",
+                    ),
+                    Text(
+                      suCo.khanCap ? 'Khẩn cấp' : 'Bình thường',
+                    ),
                   ],
                 ),
                 SizedBox(height: 4.0),
                 Row(
                   children: [
-                    Text("Ngày tạo: "),
+                    Text(
+                      "Ngày tạo: ",
+                    ),
                     Text(formatDateTime(suCo.ngayBatDau)),
                   ],
                 ),
@@ -82,7 +90,7 @@ class ListReportDoneWidget extends StatelessWidget {
                   if (suCo.trangThai == 'b')
                     _buildStatusContainer('Đang xử lý', Colors.blue),
                   if (suCo.trangThai == 'c')
-                    _buildStatusContainer('Đã xử lý', Colors.green),
+                    _buildStatusContainer('Hoàn thành', Colors.green),
                   if (suCo.trangThai == 'd')
                     _buildStatusContainer('Xử lý lỗi', Colors.red),
                 ],
@@ -92,9 +100,7 @@ class ListReportDoneWidget extends StatelessWidget {
                 onTap: () async {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => CBDetailFormWidget(suCo: suCo),
-                    ),
+                    MaterialPageRoute(builder: (context) => CBDetailFormWidget(suCo: suCo)),
                   );
                 },
                 child: Container(
@@ -141,7 +147,7 @@ class ListReportDoneWidget extends StatelessWidget {
   Widget _buildStatusContainer(String statusText, Color color) {
     return Container(
       margin: EdgeInsets.only(left: 15, top: 10),
-      padding: EdgeInsets.only(left: 15,right: 15),
+      padding: EdgeInsets.only(left: 15, right: 15),
       height: 30.0,
       decoration: BoxDecoration(
         color: color,
@@ -158,7 +164,7 @@ class ListReportDoneWidget extends StatelessWidget {
       alignment: AlignmentDirectional(0.0, 0.0),
       child: Text(
         statusText,
-        style: TextStyle(color: Colors.white,fontSize: 12),
+        style: TextStyle(color: Colors.white, fontSize: 12),
       ),
     );
   }

@@ -63,12 +63,12 @@ class _CustomMenuWidgetState extends State<CustomMenuWidget> {
                 iconPadding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
                 color: Color(0xD032C769),
                 textStyle: FlutterFlowTheme.of(context).titleSmall.override(
-                      fontFamily: 'Roboto',
-                      color: FlutterFlowTheme.of(context).primaryText,
-                      fontSize: 14.0,
-                      letterSpacing: 0.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontFamily: 'Roboto',
+                  color: FlutterFlowTheme.of(context).primaryText,
+                  fontSize: 14.0,
+                  letterSpacing: 0.0,
+                  fontWeight: FontWeight.bold,
+                ),
                 elevation: 3.0,
                 borderSide: BorderSide(
                   color: Colors.transparent,
