@@ -1,6 +1,7 @@
 import 'package:due_v1/components/list_report_progress/list_report_progress_widget.dart';
 import 'package:due_v1/flutter_flow/flutter_flow_util.dart';
 import 'package:due_v1/index.dart';
+import 'package:due_v1/pages/n_v_user/n_v_tiepnhan_form/n_v_tiepnhan_form_widget.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../../../components/account_profile/account_profile_widget.dart';
@@ -235,18 +236,27 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
                               const EdgeInsets.only(bottom: 15.0),
                               child: GestureDetector(
                                 onTap: () async {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          NVLogFormWidget(),
-                                    ),
-                                  );
+                                  if (_suCoList[index].trangThai == 'a') {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => NVTiepnhanFormWidget(suCo: _suCoList[index]),
+                                      ),
+                                    );
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => NVLogFormWidget(),
+                                      ),
+                                    );
+                                  }
                                 },
                                 child: ListReportProgressWidget(
                                   suCo: _suCoList[index],
                                 ),
                               ),
+
                             );
                           },
                         ),

@@ -573,32 +573,21 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                           padding: EdgeInsetsDirectional.fromSTEB(16.0, 12.0, 16.0, 12.0),
                           child: FFButtonWidget(
                             onPressed: () async {
-                              // Validate form fields before pushing data
+                              // Validate form data
                               if (_model.formKey.currentState!.validate()) {
                                 // Get data from form fields
-                                final String loaiSuCo = _model.dropDownValueController?.value ?? '';                                 final String vitriP = _model.ageTextController!.text;
+                                final String loaiSuCo = _model.dropDownValueController?.value ?? '';
+                                final String vitriP = _model.ageTextController!.text;
                                 final String chiTiet = _model.descriptionTextController!.text;
                                 final bool khanCap = _model.choiceChipsValue == "Khẩn cấp";
-                                final String id = Uuid().v4(); // You can use a UUID package
                                 final int ngayBatDau = DateTime.now().millisecondsSinceEpoch;
 
-                                // Create a SuCo object with the collected data
-                                // final SuCo suCo = SuCo(
-                                //   id: id,
-                                //   loaiSuCo: loaiSuCo,
-                                //   vitriP: vitriP,
-                                //   chiTiet: chiTiet,
-                                //   khanCap: khanCap,
-                                //   ngayBatDau: ngayBatDau,
-                                //   ngayTiepNhan: 0,
-                                //   ngayXuLy: 0,
-                                //   trangThai: "pending",
-                                //   hinhAnh: imageUrl,
-                                // );
+                                // Use the same value for both ID and key
+                                final String id = Uuid().v4();
 
                                 try {
                                   final databaseReference = FirebaseDatabase.instance.reference().child("baocao");
-                                  await databaseReference.push().set({
+                                  await databaseReference.child(id).set({
                                     "id": id,
                                     "loaiSuCo": loaiSuCo,
                                     "vitriP": vitriP,
@@ -610,18 +599,8 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                                     "trangThai": "a",
                                     "hinhAnh": uploadedFileUrl ?? '',
                                   });
-
-
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Yêu cầu đã được gửi thành công!'),
-                                      backgroundColor: Colors.green,
-                                    ),
-                                  );
-
-                                  _model.formKey.currentState!.reset();
-                                } catch (error) {
-                                  print("Error sending data to Firebase: $error");
+                                } catch (e) {
+                                  print("Error: $e");
                                 }
                               }
                             },
