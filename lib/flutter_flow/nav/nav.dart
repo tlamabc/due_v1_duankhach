@@ -68,11 +68,12 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           path: '/cBRequestForm',
           builder: (context, params) => CBRequestFormWidget(),
         ),
-        FFRoute(
-          name: 'CB_DetailForm',
-          path: '/cBDetailForm',
-          builder: (context, params) => CBDetailFormWidget(),
-        ),
+//         FFRoute(
+//           name: 'CB_DetailForm',
+//           path: '/cBDetailForm',
+//           builder: (context, params) => CBDetailFormWidget(suCo: suCo),
+//
+// ),
         FFRoute(
           name: 'NV_Dashboard',
           path: '/nVDashboard',
@@ -100,6 +101,9 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
+
+
+
 
 extension NavParamExtensions on Map<String, String?> {
   Map<String, String> get withoutNulls => Map.fromEntries(
