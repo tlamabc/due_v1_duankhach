@@ -12,9 +12,8 @@ import '../../../flutter_flow/flutter_flow_widgets.dart';
 import '../../../suco.dart';
 import 'n_v_dashboard_model.dart';
 
-
 class NVDashboardWidget extends StatefulWidget {
-  const NVDashboardWidget({super.key});
+  const NVDashboardWidget({Key? key}) : super(key: key);
 
   @override
   State<NVDashboardWidget> createState() => _NVDashboardWidgetState();
@@ -26,42 +25,44 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
 
   List<SuCo> _suCoList = [];
   bool _isLoading = true;
+  String _filterStatus = '';
+
+  List<SuCo> getFilteredSuCoList() {
+    if (_filterStatus.isEmpty) {
+      return _suCoList;
+    } else {
+      return _suCoList.where((suCo) => suCo.trangThai == _filterStatus).toList();
+    }
+  }
+
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => NVDashboardModel());
-    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    WidgetsBinding.instance!.addPostFrameCallback((_) => setState(() {}));
     _fetchReports();
   }
+
   Future<void> _fetchReports() async {
     final databaseReference = FirebaseDatabase.instance.ref().child('baocao');
 
-    // Sử dụng phương thức .onValue để lắng nghe sự thay đổi trong dữ liệu
     databaseReference.onValue.listen((event) {
       final snapshot = event.snapshot;
 
       if (snapshot.value != null) {
-        final Map<dynamic, dynamic> reports = snapshot.value as Map<dynamic, dynamic>;
-        // Xóa dữ liệu cũ trước khi cập nhật
+        final Map<dynamic, dynamic> reports =
+        snapshot.value as Map<dynamic, dynamic>;
         _suCoList.clear();
-        // Cập nhật danh sách với dữ liệu mới từ Firebase
         reports.forEach((key, value) {
           _suCoList.add(SuCo.fromJson(Map<String, dynamic>.from(value)));
         });
       }
 
-      // Cập nhật trạng thái và gọi setState để rebuild UI
       setState(() {
         _isLoading = false;
       });
     });
-  }
-
-  @override
-  void dispose() {
-    _model.dispose();
-    super.dispose();
   }
 
   @override
@@ -138,37 +139,124 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
           centerTitle: true,
           elevation: 2.0,
         ),
-        body: Container(
-          child: _isLoading
-              ? Center(child: CircularProgressIndicator())
-              : Padding(
-            padding: EdgeInsets.all(18.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _suCoList.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 15.0),
-                        child: GestureDetector(
-                          onTap: () async {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => NVLogFormWidget()),
+        body: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Container(
+                    width: 150.0,
+                    height: 40.0,
+                    decoration: BoxDecoration(
+                      color: Color(0xFF5240F4),
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    alignment: AlignmentDirectional(0.0, 0.0),
+                    child: Text(
+                      'Danh sách nhiệm vụ',
+                      style: FlutterFlowTheme.of(context).bodyMedium.override(
+                        fontFamily: 'Readex Pro',
+                        color: FlutterFlowTheme.of(context)
+                            .secondaryBackground,
+                        letterSpacing: 0.0,
+                      ),
+                    ),
+                  ),
+                  Expanded(child: Container()),
+                  Center(
+                    child: PopupMenuButton<String>(
+                      onSelected: (String result) {
+                        setState(() {
+                          if (result == 'Tùy chọn 1') {
+                            _filterStatus = 'a';
+                          } else if (result == 'Tùy chọn 2') {
+                            _filterStatus = 'b';
+                          } else if (result == 'Tùy chọn 3') {
+                            _filterStatus = 'c';
+                          } else if (result == 'Tùy chọn 4') {
+                            _filterStatus = 'd';
+                          } else {
+                            _filterStatus = '';
+                          }
+                        });
+                      },
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                        const PopupMenuItem<String>(
+                          value: 'Tùy chọn 0',
+                          child: Text('Tất cả'),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'Tùy chọn 1',
+                          child: Text('Tiếp nhận'),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'Tùy chọn 2',
+                          child: Text('Đang xử lý'),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'Tùy chọn 3',
+                          child: Text('Hoàn thành'),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'Tùy chọn 4',
+                          child: Text('Xử lý lỗi'),
+                        ),
+                      ],
+                      icon: Icon(Icons.filter_list, size: 30),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Container(
+                child: _isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : Padding(
+                  padding: EdgeInsets.all(18.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: _suCoList.length,
+                          itemBuilder: (context, index) {
+                            // Kiểm tra xem có cần lọc danh sách hay không
+                            if (_filterStatus.isNotEmpty &&
+                                _suCoList[index].trangThai !=
+                                    _filterStatus) {
+                              // Bỏ qua nếu không khớp với trạng thái lọc
+                              return SizedBox.shrink();
+                            }
+                            return Padding(
+                              padding:
+                              const EdgeInsets.only(bottom: 15.0),
+                              child: GestureDetector(
+                                onTap: () async {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          NVLogFormWidget(),
+                                    ),
+                                  );
+                                },
+                                child: ListReportProgressWidget(
+                                  suCo: _suCoList[index],
+                                ),
+                              ),
                             );
                           },
-                          child: ListReportProgressWidget(suCo: _suCoList[index]),
                         ),
-                      );
-                    },
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

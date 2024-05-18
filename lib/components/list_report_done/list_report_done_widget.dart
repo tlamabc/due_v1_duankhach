@@ -1,5 +1,3 @@
-import 'package:due_v1/flutter_flow/flutter_flow_theme.dart';
-import 'package:due_v1/flutter_flow/flutter_flow_util.dart';
 import 'package:due_v1/index.dart';
 import 'package:flutter/material.dart';
 import '../../suco.dart';
@@ -92,7 +90,7 @@ class ListReportDoneWidget extends StatelessWidget {
                   if (suCo.trangThai == 'b')
                     _buildStatusContainer('Đang xử lý', Colors.blue),
                   if (suCo.trangThai == 'c')
-                    _buildStatusContainer('Đã xử lý', Colors.green),
+                    _buildStatusContainer('Hoàn thành', Colors.green),
                   if (suCo.trangThai == 'd')
                     _buildStatusContainer('Xử lý lỗi', Colors.red),
                 ],
@@ -145,28 +143,29 @@ class ListReportDoneWidget extends StatelessWidget {
       ),
     );
   }
-}
-Widget _buildStatusContainer(String statusText, Color color) {
-  return Container(
-    margin: EdgeInsets.only(left: 15, top: 10),
-    padding: EdgeInsets.only(left: 15,right: 15),
-    height: 30.0,
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.circular(20.0),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.2),
-          spreadRadius: 2,
-          blurRadius: 5,
-          offset: Offset(2, 2),
-        ),
-      ],
-    ),
-    alignment: AlignmentDirectional(0.0, 0.0),
-    child: Text(
-      statusText,
-      style: TextStyle(color: Colors.white,fontSize: 12),
-    ),
-  );
+
+  Widget _buildStatusContainer(String statusText, Color color) {
+    return Container(
+      margin: EdgeInsets.only(left: 15, top: 10),
+      padding: EdgeInsets.only(left: 15, right: 15),
+      height: 30.0,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(20.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: Offset(2, 2),
+          ),
+        ],
+      ),
+      alignment: AlignmentDirectional(0.0, 0.0),
+      child: Text(
+        statusText,
+        style: TextStyle(color: Colors.white, fontSize: 12),
+      ),
+    );
+  }
 }

@@ -77,21 +77,21 @@ class _CustomMenuWidgetState extends State<CustomMenuWidget> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
             ),
-            FlutterFlowIconButton(
-              borderColor: FlutterFlowTheme.of(context).secondaryBackground,
-              borderRadius: 24.0,
-              borderWidth: 1.0,
-              buttonSize: 40.0,
-              fillColor: FlutterFlowTheme.of(context).secondaryBackground,
-              icon: Icon(
-                Icons.filter_alt,
-                color: FlutterFlowTheme.of(context).primaryText,
-                size: 18.0,
-              ),
-              onPressed: () {
-                print('IconButton pressed ...');
-              },
-            ),
+            // FlutterFlowIconButton(
+            //   borderColor: FlutterFlowTheme.of(context).secondaryBackground,
+            //   borderRadius: 24.0,
+            //   borderWidth: 1.0,
+            //   buttonSize: 40.0,
+            //   fillColor: FlutterFlowTheme.of(context).secondaryBackground,
+            //   icon: Icon(
+            //     Icons.filter_alt,
+            //     color: FlutterFlowTheme.of(context).primaryText,
+            //     size: 18.0,
+            //   ),
+            //   onPressed: () {
+            //     print('IconButton pressed ...');
+            //   },
+            // ),
           ].divide(SizedBox(width: 10.0)),
         ),
       ],

@@ -1,5 +1,4 @@
 import 'package:firebase_database/firebase_database.dart';
-
 import '../../../suco.dart';
 import '/components/account_profile/account_profile_widget.dart';
 import '/components/custom_menu/custom_menu_widget.dart';
@@ -27,6 +26,7 @@ class _CBDashboardWidgetState extends State<CBDashboardWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<SuCo> _suCoList = [];
   bool _isLoading = true;
+  String _filterStatus = '';
 
   @override
   void initState() {
@@ -71,8 +71,15 @@ class _CBDashboardWidgetState extends State<CBDashboardWidget> {
   @override
   void dispose() {
     _model.dispose();
-
     super.dispose();
+  }
+
+  List<SuCo> getFilteredSuCoList() {
+    if (_filterStatus.isEmpty) {
+      return _suCoList;
+    } else {
+      return _suCoList.where((suCo) => suCo.trangThai == _filterStatus).toList();
+    }
   }
 
   @override
@@ -130,10 +137,10 @@ class _CBDashboardWidgetState extends State<CBDashboardWidget> {
                 iconPadding: EdgeInsets.all(0.0),
                 color: FlutterFlowTheme.of(context).alternate,
                 textStyle: FlutterFlowTheme.of(context).headlineMedium.override(
-                      fontFamily: 'Outfit',
-                      color: Colors.white,
-                      letterSpacing: 0.0,
-                    ),
+                  fontFamily: 'Outfit',
+                  color: Colors.white,
+                  letterSpacing: 0.0,
+                ),
                 elevation: 3.0,
                 borderSide: BorderSide(
                   color: Colors.transparent,
@@ -179,7 +186,54 @@ class _CBDashboardWidgetState extends State<CBDashboardWidget> {
                       child: wrapWithModel(
                         model: _model.customMenuModel,
                         updateCallback: () => setState(() {}),
-                        child: CustomMenuWidget(),
+                        child: Row(
+                          children: [
+                            CustomMenuWidget(),
+                            Expanded(child: Container()),
+                            Center(
+                              child: PopupMenuButton<String>(
+                                onSelected: (String result) {
+                                  setState(() {
+                                    if (result == 'Tùy chọn 1') {
+                                      _filterStatus = 'a';
+                                    } else if (result == 'Tùy chọn 2') {
+                                      _filterStatus = 'b';
+                                    } else if (result == 'Tùy chọn 3') {
+                                      _filterStatus = 'c';
+                                    } else if (result == 'Tùy chọn 4') {
+                                      _filterStatus = 'd';
+                                    } else {
+                                      _filterStatus = '';
+                                    }
+                                  });
+                                },
+                                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                  const PopupMenuItem<String>(
+                                    value: 'Tùy chọn 0',
+                                    child: Text('Tất cả'),
+                                  ),
+                                  const PopupMenuItem<String>(
+                                    value: 'Tùy chọn 1',
+                                    child: Text('Chờ tiếp nhận'),
+                                  ),
+                                  const PopupMenuItem<String>(
+                                    value: 'Tùy chọn 2',
+                                    child: Text('Đang xử lý'),
+                                  ),
+                                  const PopupMenuItem<String>(
+                                    value: 'Tùy chọn 3',
+                                    child: Text('Hoàn thành'),
+                                  ),
+                                  const PopupMenuItem<String>(
+                                    value: 'Tùy chọn 4',
+                                    child: Text('Xử lý lỗi'),
+                                  ),
+                                ],
+                                icon: Icon(Icons.filter_list, size: 30),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -193,11 +247,11 @@ class _CBDashboardWidgetState extends State<CBDashboardWidget> {
                     : Padding(
                   padding: EdgeInsets.all(18.0),
                   child: ListView.builder(
-                    itemCount: _suCoList.length,
+                    itemCount: getFilteredSuCoList().length,
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 15.0),
-                        child: ListReportDoneWidget(suCo: _suCoList[index]),
+                        child: ListReportDoneWidget(suCo: getFilteredSuCoList()[index]),
                       );
                     },
                   ),
