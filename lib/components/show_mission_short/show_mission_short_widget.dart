@@ -1,3 +1,4 @@
+import '../../suco.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,9 @@ import 'show_mission_short_model.dart';
 export 'show_mission_short_model.dart';
 
 class ShowMissionShortWidget extends StatefulWidget {
-  const ShowMissionShortWidget({super.key});
+  final SuCo suCo;
+
+  ShowMissionShortWidget({required this.suCo});
 
   @override
   State<ShowMissionShortWidget> createState() => _ShowMissionShortWidgetState();
@@ -91,7 +94,7 @@ class _ShowMissionShortWidgetState extends State<ShowMissionShortWidget> {
                   color: FlutterFlowTheme.of(context).primary,
                 ),
                 Text(
-                  'Điện',
+                  ' ${widget.suCo.loaiSuCo}',
                   style: FlutterFlowTheme.of(context).bodyMedium.override(
                         fontFamily: 'Readex Pro',
                         letterSpacing: 0.0,
@@ -136,7 +139,7 @@ class _ShowMissionShortWidgetState extends State<ShowMissionShortWidget> {
                   color: FlutterFlowTheme.of(context).primary,
                 ),
                 Text(
-                  'H203',
+                  ' ${widget.suCo.vitriP}',
                   style: FlutterFlowTheme.of(context).bodyMedium.override(
                         fontFamily: 'Readex Pro',
                         letterSpacing: 0.0,
@@ -183,7 +186,7 @@ class _ShowMissionShortWidgetState extends State<ShowMissionShortWidget> {
                 ),
                 Expanded(
                   child: Text(
-                    'Hệ thống điện gặp sự cố nghiêm trọng, các thiết bị đều không thể hoạt động',
+                    ' ${widget.suCo.chiTiet}',
                     textAlign: TextAlign.start,
                     maxLines: 10,
                     style: FlutterFlowTheme.of(context).bodyMedium.override(
@@ -232,7 +235,7 @@ class _ShowMissionShortWidgetState extends State<ShowMissionShortWidget> {
                   color: FlutterFlowTheme.of(context).primary,
                 ),
                 Text(
-                  'Khẩn cấp',
+                  widget.suCo.khanCap ? 'Khẩn cấp' : 'Bình thường',
                   style: FlutterFlowTheme.of(context).bodyMedium.override(
                         fontFamily: 'Readex Pro',
                         letterSpacing: 0.0,

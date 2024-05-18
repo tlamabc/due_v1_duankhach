@@ -79,11 +79,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           path: '/nVDashboard',
           builder: (context, params) => NVDashboardWidget(),
         ),
-        FFRoute(
-          name: 'NV_LogForm',
-          path: '/nVLogForm',
-          builder: (context, params) => NVLogFormWidget(),
-        ),
+        // FFRoute(
+        //   name: 'NV_LogForm',
+        //   path: '/nVLogForm',
+        //   builder: (context, params) => NVLogFormWidget(),
+        // ),
         FFRoute(
           name: 'ChangePassword',
           path: '/changePassword',

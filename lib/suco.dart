@@ -10,6 +10,10 @@ class SuCo {
   int ngayXuLy;
   String trangThai;
   String vitriP;
+  int ngayHoanThanh;
+  String nguoiTiepNhan;
+  String motaHoanThanh;
+
 
   SuCo({
     required this.chiTiet,
@@ -22,6 +26,11 @@ class SuCo {
     required this.ngayXuLy,
     required this.trangThai,
     required this.vitriP,
+    required this.nguoiTiepNhan,
+    required this.ngayHoanThanh,
+    required this.motaHoanThanh,
+
+
   });
 
   factory SuCo.fromJson(Map<String, dynamic> json) {
@@ -36,6 +45,9 @@ class SuCo {
       ngayXuLy: json['ngayXuLy'],
       trangThai: json['trangThai'],
       vitriP: json['vitriP'],
+      nguoiTiepNhan :json['nguoiTiepNhan'],
+        ngayHoanThanh :json['ngayHoanThanh'],
+        motaHoanThanh: json['motaHoanThanh'],
     );
   }
 
@@ -51,6 +63,9 @@ class SuCo {
       'ngayXuLy': ngayXuLy,
       'trangThai': trangThai,
       'vitriP': vitriP,
+      'motaHoanThanh': motaHoanThanh,
+      'nguoiTiepNhan': nguoiTiepNhan,
+      'ngayHoanThanh': ngayHoanThanh,
     };
   }
 }

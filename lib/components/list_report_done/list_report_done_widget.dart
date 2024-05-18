@@ -65,7 +65,11 @@ class ListReportDoneWidget extends StatelessWidget {
                       "Tình Trạng: ",
                     ),
                     Text(
-                      suCo.khanCap ? 'Khẩn cấp' : 'Bình thường',
+                      suCo.khanCap ? 'Khẩn cấp' : 'Sự cố nhỏ',
+                      style: TextStyle(
+                        color: suCo.khanCap ? Colors.red : Colors.purple,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),

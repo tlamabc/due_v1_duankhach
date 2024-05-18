@@ -1,3 +1,4 @@
+import '../../../../suco.dart';
 import '/components/confirm_dialog/confirm_dialog_widget.dart';
 import '/components/show_mission_short/show_mission_short_widget.dart';
 import '/flutter_flow/flutter_flow_choice_chips.dart';
@@ -14,8 +15,11 @@ import 'n_v_log_form_model.dart';
 export 'n_v_log_form_model.dart';
 
 class NVLogFormWidget extends StatefulWidget {
-  const NVLogFormWidget({super.key});
+  final SuCo suCo;
 
+  NVLogFormWidget({required this.suCo});
+  
+  
   @override
   State<NVLogFormWidget> createState() => _NVLogFormWidgetState();
 }
@@ -24,6 +28,8 @@ class _NVLogFormWidgetState extends State<NVLogFormWidget> {
   late NVLogFormModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+
 
   @override
   void initState() {
@@ -132,14 +138,16 @@ class _NVLogFormWidgetState extends State<NVLogFormWidget> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Expanded(
-                                          child: wrapWithModel(
-                                            model: _model.showMissionShortModel,
-                                            updateCallback: () =>
-                                                setState(() {}),
-                                            child: ShowMissionShortWidget(),
-                                          ),
-                                        ),
+                                        // Expanded(
+                                        //   child: wrapWithModel(
+                                        //     model: _model.showMissionShortModel,
+                                        //     updateCallback: () =>
+                                        //         setState(() {}),
+                                        //     child: ShowMissionShortWidget(
+                                        //        suCo: suCo
+                                        //     ),
+                                        //   ),
+                                        // ),
                                       ],
                                     ),
                                     Padding(

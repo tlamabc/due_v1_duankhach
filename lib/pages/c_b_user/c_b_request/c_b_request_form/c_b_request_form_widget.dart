@@ -547,7 +547,7 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                                   if (_model.uploadedLocalFile != null)
                                     Padding(
                                       padding: EdgeInsets.only(top: 16.0),
-                                      child: Text('Image uploaded: ${_model.uploadedLocalFile!.name}'),
+                                      //child: Text('Image uploaded: ${_model.uploadedLocalFile!.name}'),
                                     ),
                                 ]
                                     .divide(SizedBox(height: 16.0))
@@ -595,15 +595,39 @@ class _CBRequestFormWidgetState extends State<CBRequestFormWidget> {
                                     "khanCap": khanCap,
                                     "ngayBatDau": ngayBatDau,
                                     "ngayTiepNhan": 0,
+                                    "nguoiTiepNhan": '...',
+                                    "ngayHoanThanh": 0,
+                                    "motaHoanThanh": '...',
                                     "ngayXuLy": 0,
                                     "trangThai": "a",
                                     "hinhAnh": uploadedFileUrl ?? '',
                                   });
+
+                                  // Show success alert
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('Thành công'),
+                                        content: Text('Dữ liệu đã được gửi thành công.'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop(); // Close the dialog
+                                              Navigator.of(context).pop(); // Go back to the previous screen
+                                            },
+                                            child: Text('OK'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
                                 } catch (e) {
                                   print("Error: $e");
                                 }
                               }
                             },
+
                             text: 'Xác nhận',
                             options: FFButtonOptions(),  // Cung cấp văn bản cho nút 'Xác nhận'
                           ),

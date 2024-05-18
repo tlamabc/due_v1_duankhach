@@ -90,7 +90,7 @@ class ListReportProgressWidget extends StatelessWidget {
                   if (suCo.trangThai == 'a')
                     _buildStatusContainer('Tiếp nhận', Colors.amber),
                   if (suCo.trangThai == 'b')
-                    _buildStatusContainer('Đang sử lý', Colors.blue),
+                    _buildStatusContainer('Đang xử lý', Colors.blue),
                   if (suCo.trangThai == 'c')
                     _buildStatusContainer('Hoàn thành', Colors.green),
                   if (suCo.trangThai == 'd')

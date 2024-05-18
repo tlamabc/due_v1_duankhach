@@ -42,6 +42,11 @@ class _CBDetailFormWidgetState extends State<CBDetailFormWidget> {
 
   @override
   Widget build(BuildContext context) {
+    String formatDateTime(int timestamp) {
+      var date = DateTime.fromMillisecondsSinceEpoch(timestamp);
+      var formattedDate = DateFormat('HH:mm MM/dd/yyyy').format(date);
+      return formattedDate;
+    }
     return GestureDetector(
       onTap: () => _model.unfocusNode.canRequestFocus
           ? FocusScope.of(context).requestFocus(_model.unfocusNode)
@@ -373,7 +378,7 @@ class _CBDetailFormWidgetState extends State<CBDetailFormWidget> {
                                               color: FlutterFlowTheme.of(context).primary,
                                             ),
                                             Text(
-                                              'Nguyễn Văn A',
+                                              ' ${widget.suCo.nguoiTiepNhan}',
                                               style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                 fontFamily: 'Readex Pro',
                                                 letterSpacing: 0.0,
@@ -405,7 +410,7 @@ class _CBDetailFormWidgetState extends State<CBDetailFormWidget> {
                                               child: Align(
                                                 alignment: AlignmentDirectional(-1.0, 0.0),
                                                 child: Text(
-                                                  'Ngày tạo',
+                                                  'Ngày phát sinh sự cố ',
                                                   style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                     fontFamily: 'Readex Pro',
                                                     letterSpacing: 0.0,
@@ -418,7 +423,7 @@ class _CBDetailFormWidgetState extends State<CBDetailFormWidget> {
                                               color: FlutterFlowTheme.of(context).primary,
                                             ),
                                             Text(
-                                              '01/05/2024',
+                                              formatDateTime(widget.suCo.ngayBatDau),
                                               style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                 fontFamily: 'Readex Pro',
                                                 letterSpacing: 0.0,
@@ -452,7 +457,7 @@ class _CBDetailFormWidgetState extends State<CBDetailFormWidget> {
                                                 child: Align(
                                                   alignment: AlignmentDirectional(-1.0, 0.0),
                                                   child: Text(
-                                                    'Ngày xử lý',
+                                                    'Ngày tiếp nhận xử lý',
                                                     style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                       fontFamily: 'Readex Pro',
                                                       letterSpacing: 0.0,
@@ -464,13 +469,15 @@ class _CBDetailFormWidgetState extends State<CBDetailFormWidget> {
                                                 thickness: 2.0,
                                                 color: FlutterFlowTheme.of(context).primary,
                                               ),
-                                              Text(
-                                                '02/05/2024',
-                                                style: FlutterFlowTheme.of(context).bodyMedium.override(
-                                                  fontFamily: 'Readex Pro',
-                                                  letterSpacing: 0.0,
+                                              if (widget.suCo.ngayTiepNhan != 0)
+                                                Text(
+                                                  formatDateTime(widget.suCo.ngayTiepNhan),
+                                                  style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                    fontFamily: 'Readex Pro',
+                                                    letterSpacing: 0.0,
+                                                  ),
                                                 ),
-                                              ),
+
                                             ],
                                           ),
                                         ),
@@ -513,13 +520,15 @@ class _CBDetailFormWidgetState extends State<CBDetailFormWidget> {
                                               thickness: 2.0,
                                               color: FlutterFlowTheme.of(context).primary,
                                             ),
-                                            Text(
-                                              '03/05/2024',
-                                              style: FlutterFlowTheme.of(context).bodyMedium.override(
-                                                fontFamily: 'Readex Pro',
-                                                letterSpacing: 0.0,
+                                            if (widget.suCo.ngayHoanThanh != 0)
+                                              Text(
+                                                formatDateTime(widget.suCo.ngayHoanThanh),
+                                                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                  fontFamily: 'Readex Pro',
+                                                  letterSpacing: 0.0,
+                                                ),
                                               ),
-                                            ),
+
                                           ],
                                         ),
                                       ),
@@ -592,7 +601,7 @@ class _CBDetailFormWidgetState extends State<CBDetailFormWidget> {
                                             ),
                                             Expanded(
                                               child: Text(
-                                                'Hệ thống điện gặp sự cố nghiêm trọng, các thiết bị đều không thể hoạt động',
+                                                ' ${widget.suCo.motaHoanThanh}',
                                                 textAlign: TextAlign.start,
                                                 maxLines: 10,
                                                 style: FlutterFlowTheme.of(context).bodyMedium.override(
@@ -628,7 +637,7 @@ class _CBDetailFormWidgetState extends State<CBDetailFormWidget> {
                                               child: Align(
                                                 alignment: AlignmentDirectional(-1.0, 0.0),
                                                 child: Text(
-                                                  'Hình ảnh',
+                                                  'Hình ảnh thực trạng',
                                                   style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                     fontFamily: 'Readex Pro',
                                                     letterSpacing: 0.0,
@@ -697,12 +706,18 @@ class _CBDetailFormWidgetState extends State<CBDetailFormWidget> {
                                               thickness: 2.0,
                                               color: FlutterFlowTheme.of(context).primary,
                                             ),
-                                            Text(
-                                              'Hoàn thành',
-                                              style: FlutterFlowTheme.of(context).bodyMedium.override(
-                                                fontFamily: 'Readex Pro',
-                                                letterSpacing: 0.0,
-                                              ),
+                                            Row(
+                                              children: [
+
+                                                if (widget.suCo.trangThai == 'a')
+                                                  _buildStatusContainer('Chờ tiếp nhận', Colors.amber),
+                                                if (widget.suCo.trangThai == 'b')
+                                                  _buildStatusContainer('Đang xử lý', Colors.blue),
+                                                if (widget.suCo.trangThai == 'c')
+                                                  _buildStatusContainer('Hoàn thành', Colors.green),
+                                                if (widget.suCo.trangThai == 'd')
+                                                  _buildStatusContainer('Xử lý lỗi', Colors.red),
+                                              ],
                                             ),
                                           ],
                                         ),
@@ -770,4 +785,29 @@ class _CBDetailFormWidgetState extends State<CBDetailFormWidget> {
         );
 
   }
+}
+
+Widget _buildStatusContainer(String statusText, Color color) {
+  return Container(
+    margin: EdgeInsets.only(left: 15, top: 10),
+    padding: EdgeInsets.only(left: 15, right: 15),
+    height: 30.0,
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(20.0),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.2),
+          spreadRadius: 2,
+          blurRadius: 5,
+          offset: Offset(2, 2),
+        ),
+      ],
+    ),
+    alignment: AlignmentDirectional(0.0, 0.0),
+    child: Text(
+      statusText,
+      style: TextStyle(color: Colors.white, fontSize: 12),
+    ),
+  );
 }

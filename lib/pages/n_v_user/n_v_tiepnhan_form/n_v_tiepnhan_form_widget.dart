@@ -1,20 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 import '../../../../suco.dart';
-import '/components/show_log_result/show_log_result_widget.dart';
-import '/components/show_mission_short/show_mission_short_widget.dart';
-import '/components/show_work_progress/show_work_progress_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'n_v_tiepnhan_form_model.dart';
 export 'n_v_tiepnhan_form_model.dart';
-
 class NVTiepnhanFormWidget extends StatefulWidget {
   final SuCo suCo;
 
@@ -26,6 +21,7 @@ class NVTiepnhanFormWidget extends StatefulWidget {
 
 class _NVTiepnhanFormWidget extends State<NVTiepnhanFormWidget> {
   late CBDetailFormModel _model;
+  User? currentUser;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -34,7 +30,20 @@ class _NVTiepnhanFormWidget extends State<NVTiepnhanFormWidget> {
     super.initState();
     _model = createModel(context, () => CBDetailFormModel());
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchCurrentUser();
+    });
+  }
+
+  void fetchCurrentUser() {
+    setState(() {
+      currentUser = FirebaseAuth.instance.currentUser;
+    });
+    if (currentUser == null) {
+      print("User is not logged in or email is null");
+    } else {
+      print("User email: ${currentUser!.email}");
+    }
   }
 
   @override
@@ -418,9 +427,25 @@ class _NVTiepnhanFormWidget extends State<NVTiepnhanFormWidget> {
 
                         // Cập nhật dữ liệu lên Firebase Realtime Database
                         DatabaseReference databaseReference = FirebaseDatabase.instance.reference();
-                        databaseReference.child('baocao').child(widget.suCo.id).update({
-                          'trangThai': 'b',
-                        });
+                        // Kiểm tra nếu currentUser không null và có email
+                        if (currentUser != null && currentUser?.email != null) {
+                          // Cập nhật dữ liệu trên Firebase
+                          databaseReference.child('baocao').child(widget.suCo.id).update({
+                            'nguoiTiepNhan': currentUser?.email,
+                            'trangThai': 'b',
+                            'ngayTiepNhan': DateTime.now().millisecondsSinceEpoch,
+
+                          }).then((_) {
+                            // Cập nhật thành công
+                            print("Data updated successfully");
+                          }).catchError((error) {
+                            // Xử lý lỗi nếu cập nhật thất bại
+                            print("Failed to update data: $error");
+                          });
+                        } else {
+                          // Xử lý trường hợp currentUser hoặc email là null
+                          print("User is not logged in or email is null");
+                        }
 
                         // Thoát khỏi màn hình và cập nhật lại
                         Navigator.pop(context);
@@ -486,4 +511,8 @@ class _NVTiepnhanFormWidget extends State<NVTiepnhanFormWidget> {
       ),
     );
   }
+}
+String formatDateTime(DateTime dateTime) {
+  final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+  return formatter.format(dateTime);
 }
