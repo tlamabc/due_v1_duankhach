@@ -1,5 +1,6 @@
 import 'package:due_v1/pages/onboarding/sign_in_user/sign_in_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../c_b_user/c_b_dashboard/c_b_dashboard_model.dart';
 import '../../c_b_user/c_b_dashboard/c_b_dashboard_widget.dart';
 import '/components/custom_appbar/custom_appbar_widget.dart';
@@ -23,6 +24,8 @@ class _SignInWidgetState extends State<SignInWidget> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final String domain = '@cbdue.vn';
+  // Add this line to track the state of the checkbox
+  bool _savePassword = false;
 
   @override
   void initState() {
@@ -36,9 +39,12 @@ class _SignInWidgetState extends State<SignInWidget> {
     _model.passwordFocusNode ??= FocusNode();
     _model.emailAddressTextController?.addListener(_updateEmailText);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {});
+      _loadLoginInfo(); // Call _loadLoginInfo() to load saved login info
+    });
   }
-
+///-------------------
   @override
   void dispose() {
     _model.emailAddressTextController?.removeListener(_updateEmailText);
@@ -63,6 +69,33 @@ class _SignInWidgetState extends State<SignInWidget> {
       );
     }
   }
+  // Function to load saved login info from SharedPreferences
+  Future<void> _loadLoginInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? email = prefs.getString('email');
+    String? password = prefs.getString('password');
+    if (email != null && password != null) {
+      setState(() {
+        _model.emailAddressTextController.text = email;
+        _model.passwordTextController.text = password;
+        _savePassword = true; // Set checkbox value to true if info is loaded
+      });
+    }
+  }
+  Future<void> _clearLoginInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('email');
+    await prefs.remove('password');
+  }
+
+
+  // Function to save login info to SharedPreferences
+  Future<void> _saveLoginInfo(String email, String password) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email', email);
+    await prefs.setString('password', password);
+  }
+  ///--------------
   Future<void> _showErrorDialog(String message) async {
     return showDialog<void>(
       context: context,
@@ -351,6 +384,26 @@ class _SignInWidgetState extends State<SignInWidget> {
                               ),
                             ),
                           ),
+                          ///---------------------------
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Checkbox(
+                                value: _savePassword, // Set checkbox value
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    _savePassword = value ?? false;
+                                    if (!_savePassword) {
+                                      // Clear saved login info if the checkbox is unchecked
+                                      _clearLoginInfo();
+                                    }
+                                  });
+                                },
+                              ),
+
+                              Text('Lưu mật khẩu'),
+                            ],
+                          ),
                           Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(
                                 0.0, 0.0, 0.0, 16.0),
@@ -361,6 +414,11 @@ class _SignInWidgetState extends State<SignInWidget> {
                                     email: _model.emailAddressTextController.text.trim(),
                                     password: _model.passwordTextController.text.trim(),
                                   );
+
+                                  // Save login info if the checkbox is checked
+                                  if (_savePassword) {
+                                    await _saveLoginInfo(_model.emailAddressTextController.text.trim(), _model.passwordTextController.text.trim());
+                                  }
 
                                   // Navigate to the dashboard on successful sign-in
                                   Navigator.push(
@@ -377,7 +435,6 @@ class _SignInWidgetState extends State<SignInWidget> {
                                   }
                                 }
                               },
-
                               text: 'Đăng Nhập',
                               options: FFButtonOptions(
                                 width: double.infinity,

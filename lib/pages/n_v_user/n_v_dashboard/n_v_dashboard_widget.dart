@@ -5,6 +5,7 @@ import 'package:due_v1/pages/n_v_user/n_v_tiepnhan_form/n_v_tiepnhan_form_widget
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../components/account_profile/account_profile_widget.dart';
 import '../../../components/list_report_done/list_report_done_widget.dart';
 import '../../../flutter_flow/flutter_flow_icon_button.dart';
@@ -13,6 +14,8 @@ import '../../../flutter_flow/flutter_flow_theme.dart';
 import '../../../flutter_flow/flutter_flow_widgets.dart';
 import '../../../suco.dart';
 import 'n_v_dashboard_model.dart';
+import 'dart:io';
+
 
 class NVDashboardWidget extends StatefulWidget {
   const NVDashboardWidget({Key? key}) : super(key: key);
@@ -86,7 +89,17 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return WillPopScope(
+        onWillPop: () async {
+      if (Platform.isAndroid || Platform.isIOS) {
+        // Nếu đây là Android hoặc iOS, thoát ứng dụng
+        SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        return false;
+      } else {
+        return true;
+      }
+    },
+    child: GestureDetector(
       onTap: () => _model.unfocusNode.canRequestFocus
           ? FocusScope.of(context).requestFocus(_model.unfocusNode)
           : FocusScope.of(context).unfocus(),
@@ -262,6 +275,7 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
