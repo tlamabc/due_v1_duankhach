@@ -1,3 +1,6 @@
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
 import '../../../../suco.dart';
 import '/components/confirm_dialog/confirm_dialog_widget.dart';
 import '/components/show_mission_short/show_mission_short_widget.dart';
@@ -15,11 +18,20 @@ import 'n_v_log_form_model.dart';
 export 'n_v_log_form_model.dart';
 
 class NVLogFormWidget extends StatefulWidget {
+  // final SuCo suCo;
+  //
+  // NVLogFormWidget({required this.suCo});
+
   final SuCo suCo;
 
   NVLogFormWidget({required this.suCo});
-  
-  
+
+
+
+
+
+
+
   @override
   State<NVLogFormWidget> createState() => _NVLogFormWidgetState();
 }
@@ -28,6 +40,37 @@ class _NVLogFormWidgetState extends State<NVLogFormWidget> {
   late NVLogFormModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final DatabaseReference _databaseReference = FirebaseDatabase.instance.reference();
+
+  void _updateFirebase(String field, String value) {
+    _databaseReference.child('baocao').child(widget.suCo.id).update({field: value});
+  }
+
+  String _choiceChipsValue = '';
+  String _motaHoanThanh = '';
+  String _trangThai = '';
+
+
+
+  //
+  //
+  // databaseReference.child('baocao').child(widget.suCo.id).update({
+  // 'nguoiTiepNhan': currentUser?.email,
+  // 'trangThai': 'b',
+  // 'ngayTiepNhan': DateTime.now().millisecondsSinceEpoch,
+  //
+  // }).then((_) {
+  // // Cập nhật thành công
+  // print("Data updated successfully");
+  // }).catchError((error) {
+  // // Xử lý lỗi nếu cập nhật thất bại
+  // print("Failed to update data: $error");
+  // });
+  //
+
+
+
 
 
 
@@ -286,7 +329,8 @@ class _NVLogFormWidgetState extends State<NVLogFormWidget> {
                                                           color: FlutterFlowTheme.of(context).primary,
                                                         ),
                                                         Expanded(
-                                                          child: Text(
+                                                          child:
+                                                          Text(
                                                             ' ${widget.suCo.chiTiet}',
                                                             textAlign: TextAlign.start,
                                                             maxLines: 10,
@@ -470,6 +514,12 @@ class _NVLogFormWidgetState extends State<NVLogFormWidget> {
                                               contentPadding:
                                                   EdgeInsets.all(16.0),
                                             ),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _motaHoanThanh = value;
+                                              });
+                                              _updateFirebase('motaHoanThanh', value);
+                                            },
                                             style: FlutterFlowTheme.of(context)
                                                 .bodyLarge
                                                 .override(
@@ -485,15 +535,24 @@ class _NVLogFormWidgetState extends State<NVLogFormWidget> {
                                                 .descriptionTextControllerValidator
                                                 .asValidator(context),
                                           ),
-                                          FlutterFlowChoiceChips(
-                                            options: [
-                                              ChipData('Hoàn Thành '),
-                                              ChipData('Xử Lý Lỗi')
-                                            ],
-                                            onChanged: (val) => setState(() =>
-                                                _model.choiceChipsValue =
-                                                    val?.firstOrNull),
-                                            selectedChipStyle: ChipStyle(
+                                  FlutterFlowChoiceChips(
+                                    options: [
+                                      ChipData('Hoàn Thành'),
+                                      ChipData('Xử Lý Lỗi')
+                                    ],
+                                    onChanged: (val) {
+                                      setState(() {
+                                        _choiceChipsValue = val?.firstOrNull ?? ''; // Default value when val is null
+                                        if (_choiceChipsValue == 'Hoàn Thành') {
+                                          _trangThai = 'c';
+                                        } else if (_choiceChipsValue == 'Xử Lý Lỗi') { // Changed to "else if" here
+                                          _trangThai = 'd';
+                                        }
+                                      });
+                                      _updateFirebase('trangThai', _trangThai);
+                                    },
+
+                                  selectedChipStyle: ChipStyle(
                                               backgroundColor:
                                                   FlutterFlowTheme.of(context)
                                                       .accent2,
@@ -563,118 +622,65 @@ class _NVLogFormWidgetState extends State<NVLogFormWidget> {
                                             hoverColor: Colors.transparent,
                                             highlightColor: Colors.transparent,
                                             onTap: () async {
-                                              final selectedMedia =
-                                                  await selectMediaWithSourceBottomSheet(
+                                              final selectedMedia = await selectMediaWithSourceBottomSheet(
                                                 context: context,
                                                 allowPhoto: true,
                                               );
                                               if (selectedMedia != null &&
-                                                  selectedMedia.every((m) =>
-                                                      validateFileFormat(
-                                                          m.storagePath,
-                                                          context))) {
-                                                setState(() => _model
-                                                    .isDataUploading = true);
-                                                var selectedUploadedFiles =
-                                                    <FFUploadedFile>[];
+                                                  selectedMedia.every((m) => validateFileFormat(m.storagePath, context))) {
+                                                setState(() => _model.isDataUploading = true);
 
                                                 try {
-                                                  selectedUploadedFiles =
-                                                      selectedMedia
-                                                          .map((m) =>
-                                                              FFUploadedFile(
-                                                                name: m
-                                                                    .storagePath
-                                                                    .split('/')
-                                                                    .last,
-                                                                bytes: m.bytes,
-                                                                height: m
-                                                                    .dimensions
-                                                                    ?.height,
-                                                                width: m
-                                                                    .dimensions
-                                                                    ?.width,
-                                                                blurHash:
-                                                                    m.blurHash,
-                                                              ))
-                                                          .toList();
+                                                  // Upload image to Firebase Storage
+                                                  final uploadedFile = await uploadFileToFirebaseStorage(selectedMedia.first.bytes);
+
+                                                  // Get the URL of the uploaded image
+                                                  final imageUrl = await uploadedFile.getDownloadURL();
+
+                                                  // Update Realtime Database with the image URL
+                                                  await updateFirebaseDatabase('hinhAnh', imageUrl);
+
+
+                                                } catch (e) {
+                                                  // Handle errors
+                                                  print('Error: $e');
                                                 } finally {
-                                                  _model.isDataUploading =
-                                                      false;
-                                                }
-                                                if (selectedUploadedFiles
-                                                        .length ==
-                                                    selectedMedia.length) {
-                                                  setState(() {
-                                                    _model.uploadedLocalFile =
-                                                        selectedUploadedFiles
-                                                            .first;
-                                                  });
-                                                } else {
-                                                  setState(() {});
-                                                  return;
+                                                  setState(() => _model.isDataUploading = false);
                                                 }
                                               }
                                             },
                                             child: Container(
                                               width: double.infinity,
-                                              constraints: BoxConstraints(
-                                                maxWidth: 500.0,
-                                              ),
+                                              constraints: BoxConstraints(maxWidth: 500.0),
                                               decoration: BoxDecoration(
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .secondaryBackground,
-                                                borderRadius:
-                                                    BorderRadius.circular(12.0),
+                                                color: FlutterFlowTheme.of(context).secondaryBackground,
+                                                borderRadius: BorderRadius.circular(12.0),
                                                 border: Border.all(
-                                                  color: FlutterFlowTheme.of(
-                                                          context)
-                                                      .alternate,
+                                                  color: FlutterFlowTheme.of(context).alternate,
                                                   width: 2.0,
                                                 ),
                                               ),
                                               child: Padding(
                                                 padding: EdgeInsets.all(8.0),
                                                 child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.max,
+                                                  mainAxisSize: MainAxisSize.max,
                                                   children: [
                                                     Icon(
                                                       Icons.add_a_photo_rounded,
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .primary,
+                                                      color: FlutterFlowTheme.of(context).primary,
                                                       size: 32.0,
                                                     ),
                                                     Padding(
-                                                      padding:
-                                                          EdgeInsetsDirectional
-                                                              .fromSTEB(
-                                                                  16.0,
-                                                                  0.0,
-                                                                  0.0,
-                                                                  0.0),
+                                                      padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 0.0, 0.0),
                                                       child: Text(
                                                         'Tải ảnh lên',
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .bodyMedium
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Readex Pro',
-                                                                  color: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .primaryText,
-                                                                  fontSize:
-                                                                      16.0,
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                ),
+                                                        textAlign: TextAlign.center,
+                                                        style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                          fontFamily: 'Readex Pro',
+                                                          color: FlutterFlowTheme.of(context).primaryText,
+                                                          fontSize: 16.0,
+                                                          letterSpacing: 0.0,
+                                                        ),
                                                       ),
                                                     ),
                                                   ],
@@ -805,4 +811,28 @@ class _NVLogFormWidgetState extends State<NVLogFormWidget> {
       ),
     );
   }
+
+  updateFirebaseDatabase(String s, String imageUrl) {}
 }
+Future<Reference> uploadFileToFirebaseStorage(Uint8List fileBytes) async {
+  try {
+    // Create a reference to the location you want to upload to in Firebase Storage
+    Reference storageReference = FirebaseStorage.instance.ref().child('your_storage_path/your_file_name.jpg');
+
+    // Upload the file to Firebase Storage
+    UploadTask uploadTask = storageReference.putData(fileBytes);
+
+    // Wait for the upload to complete
+    await uploadTask;
+
+    // Return the reference to the uploaded file
+    return storageReference;
+  } catch (e) {
+    // Handle errors
+    print('Error uploading file to Firebase Storage: $e');
+    rethrow; // Re-throw the error to handle it elsewhere if needed
+  }
+}
+
+
+

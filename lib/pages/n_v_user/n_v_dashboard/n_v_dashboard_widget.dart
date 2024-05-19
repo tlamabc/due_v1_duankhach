@@ -28,7 +28,6 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
   bool _isLoading = true;
   String _filterStatus = '';
 
-  get suCo => null;
 
   List<SuCo> getFilteredSuCoList() {
     if (_filterStatus.isEmpty) {
@@ -249,7 +248,7 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => NVLogFormWidget(suCo: suCo),
+                                        builder: (context) => NVLogFormWidget(suCo: _suCoList[index]),
                                       ),
                                     );
                                   }
