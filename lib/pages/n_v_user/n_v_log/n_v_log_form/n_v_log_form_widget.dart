@@ -621,78 +621,64 @@ class _NVLogFormWidgetState extends State<NVLogFormWidget> {
                                             ),
                                             wrapped: true,
                                           ),
-                                          InkWell(
-                                            splashColor: Colors.transparent,
-                                            focusColor: Colors.transparent,
-                                            hoverColor: Colors.transparent,
-                                            highlightColor: Colors.transparent,
-                                            onTap: () async {
-                                              final selectedMedia = await selectMediaWithSourceBottomSheet(
-                                                context: context,
-                                                allowPhoto: true,
-                                              );
-                                              if (selectedMedia != null &&
-                                                  selectedMedia.every((m) => validateFileFormat(m.storagePath, context))) {
-                                                setState(() => _model.isDataUploading = true);
-
-                                                try {
-                                                  // Upload image to Firebase Storage
-                                                  final uploadedFile = await uploadFileToFirebaseStorage(selectedMedia.first.bytes);
-
-                                                  // Get the URL of the uploaded image
-                                                  final imageUrl = await uploadedFile.getDownloadURL();
-
-                                                  // Update Realtime Database with the image URL
-                                                  await updateFirebaseDatabase('hinhAnh', imageUrl);
-
-
-                                                } catch (e) {
-                                                  // Handle errors
-                                                  print('Error: $e');
-                                                } finally {
-                                                  setState(() => _model.isDataUploading = false);
-                                                }
-                                              }
-                                            },
-                                            child: Container(
-                                              width: double.infinity,
-                                              constraints: BoxConstraints(maxWidth: 500.0),
-                                              decoration: BoxDecoration(
-                                                color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                borderRadius: BorderRadius.circular(12.0),
-                                                border: Border.all(
-                                                  color: FlutterFlowTheme.of(context).alternate,
-                                                  width: 2.0,
-                                                ),
-                                              ),
-                                              child: Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Row(
-                                                  mainAxisSize: MainAxisSize.max,
-                                                  children: [
-                                                    Icon(
-                                                      Icons.add_a_photo_rounded,
-                                                      color: FlutterFlowTheme.of(context).primary,
-                                                      size: 32.0,
+                                          Container(
+                                            width: double.infinity,
+                                            height: 150.0,
+                                            decoration: BoxDecoration(
+                                              color: FlutterFlowTheme.of(context).secondaryBackground,
+                                              borderRadius: BorderRadius.circular(15.0),
+                                            ),
+                                            child: Padding(
+                                              padding: EdgeInsets.all(5.0),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    width: 75.0,
+                                                    height: 100.0,
+                                                    decoration: BoxDecoration(
+                                                      color: FlutterFlowTheme.of(context).secondaryBackground,
                                                     ),
-                                                    Padding(
-                                                      padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 0.0, 0.0),
+                                                    child: Align(
+                                                      alignment: AlignmentDirectional(-1.0, 0.0),
                                                       child: Text(
-                                                        'Tải ảnh lên',
-                                                        textAlign: TextAlign.center,
+                                                        'Hình ảnh thực trạng',
                                                         style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                           fontFamily: 'Readex Pro',
-                                                          color: FlutterFlowTheme.of(context).primaryText,
-                                                          fontSize: 16.0,
                                                           letterSpacing: 0.0,
                                                         ),
                                                       ),
                                                     ),
-                                                  ],
-                                                ),
+                                                  ),
+                                                  VerticalDivider(
+                                                    thickness: 2.0,
+                                                    color: FlutterFlowTheme.of(context).primary,
+                                                  ),
+
+                                                  Align(
+                                                    alignment: AlignmentDirectional(0.0, 0.0),
+                                                    child: widget.suCo.hinhAnh != ''
+                                                        ? ClipRRect(
+                                                      borderRadius: BorderRadius.circular(8.0),
+                                                      child: Image.network(
+                                                        widget.suCo.hinhAnh, // Sử dụng URL từ thuộc tính hinhAnh của SuCo
+                                                        width: 150.0,
+                                                        height: 150.0,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    )
+                                                        : Text(
+                                                      'Không có hình ảnh',
+                                                      style: TextStyle(fontSize: 16.0), // Tuỳ chỉnh kiểu dáng nếu cần
+                                                    ),
+                                                  ),
+
+                                                ],
                                               ),
                                             ),
                                           ),
+
                                         ].divide(SizedBox(height: 8.0)),
                                       ),
                                     ),

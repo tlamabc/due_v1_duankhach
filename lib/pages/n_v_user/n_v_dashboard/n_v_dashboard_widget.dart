@@ -167,7 +167,7 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
                   Container(
                     height: 40.0,
                     decoration: BoxDecoration(
-                      color: Colors.lightBlueAccent,
+                      color: Colors.purpleAccent,
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     alignment: AlignmentDirectional(0.0, 0.0),

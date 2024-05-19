@@ -54,12 +54,27 @@
   <script src="flutter.js" defer></script>
 </head>
 <body>
-  
-  
-  
-  
-  
-  <script>
+
+
+
+<script src="https://www.gstatic.com/firebasejs/9.6.5/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.5/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.5/firebase-firestore.js"></script>
+<script>
+  var firebaseConfig = {
+    apiKey: "AIzaSyCk1MYsh5ypjQD8q1Mb33Zvshqj4XBuOwU",
+    authDomain: "udev1-e6949.firebaseapp.com",
+    databaseURL: "https://udev1-e6949-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "udev1-e6949",
+    storageBucket: "udev1-e6949.appspot.com",
+    messagingSenderId: "490953342675",
+    appId: "1:490953342675:web:b09527696e157c4ce35e26"
+    };
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+
+<script>
     window.addEventListener('load', function (ev) {
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
@@ -79,3 +94,4 @@
   </script>
 </body>
 </html>
+<!-- Firebase Configuration -->
