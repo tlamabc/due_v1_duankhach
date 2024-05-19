@@ -42,14 +42,15 @@ class _NVLogFormWidgetState extends State<NVLogFormWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   final DatabaseReference _databaseReference = FirebaseDatabase.instance.reference();
-
-  void _updateFirebase(String field, String value) {
+  void _updateFirebase(String field, dynamic value) {
     _databaseReference.child('baocao').child(widget.suCo.id).update({field: value});
   }
+
 
   String _choiceChipsValue = '';
   String _motaHoanThanh = '';
   String _trangThai = '';
+  int _ngayHoanThanh = 0;
 
 
 
@@ -545,10 +546,14 @@ class _NVLogFormWidgetState extends State<NVLogFormWidget> {
                                         _choiceChipsValue = val?.firstOrNull ?? ''; // Default value when val is null
                                         if (_choiceChipsValue == 'Hoàn Thành') {
                                           _trangThai = 'c';
+                                          _ngayHoanThanh = DateTime.now().millisecondsSinceEpoch;
+
                                         } else if (_choiceChipsValue == 'Xử Lý Lỗi') { // Changed to "else if" here
                                           _trangThai = 'd';
                                         }
                                       });
+                                      _updateFirebase('ngayHoanThanh', _ngayHoanThanh);
+
                                       _updateFirebase('trangThai', _trangThai);
                                     },
 
@@ -833,6 +838,3 @@ Future<Reference> uploadFileToFirebaseStorage(Uint8List fileBytes) async {
     rethrow; // Re-throw the error to handle it elsewhere if needed
   }
 }
-
-
-

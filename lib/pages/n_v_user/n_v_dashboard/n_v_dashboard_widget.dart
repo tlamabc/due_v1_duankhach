@@ -28,15 +28,18 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
   bool _isLoading = true;
   String _filterStatus = '';
 
-
   List<SuCo> getFilteredSuCoList() {
     if (_filterStatus.isEmpty) {
       return _suCoList;
+    } else if (_filterStatus == 'multiple') {
+      return _suCoList.where((suCo) =>
+      suCo.trangThai == 'c' || suCo.trangThai == 'd' || suCo.trangThai == 'b').toList();
+    } else if (_filterStatus == 'a') {
+      return _suCoList.where((suCo) => suCo.trangThai == 'a').toList();
     } else {
-      return _suCoList.where((suCo) => suCo.trangThai == _filterStatus).toList();
+      return _suCoList;
     }
   }
-
 
   @override
   void initState() {
@@ -173,36 +176,18 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
                           if (result == 'Tùy chọn 1') {
                             _filterStatus = 'a';
                           } else if (result == 'Tùy chọn 2') {
-                            _filterStatus = 'b';
-                          } else if (result == 'Tùy chọn 3') {
-                            _filterStatus = 'c';
-                          } else if (result == 'Tùy chọn 4') {
-                            _filterStatus = 'd';
-                          } else {
-                            _filterStatus = '';
+                            _filterStatus = 'multiple';
                           }
                         });
                       },
                       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                         const PopupMenuItem<String>(
-                          value: 'Tùy chọn 0',
-                          child: Text('Tất cả'),
-                        ),
-                        const PopupMenuItem<String>(
                           value: 'Tùy chọn 1',
-                          child: Text('Tiếp nhận'),
+                          child: Text('Chưa tiếp nhận'),
                         ),
                         const PopupMenuItem<String>(
                           value: 'Tùy chọn 2',
-                          child: Text('Đang xử lý'),
-                        ),
-                        const PopupMenuItem<String>(
-                          value: 'Tùy chọn 3',
-                          child: Text('Hoàn thành'),
-                        ),
-                        const PopupMenuItem<String>(
-                          value: 'Tùy chọn 4',
-                          child: Text('Xử lý lỗi'),
+                          child: Text('Nhiệm vụ của tôi'),
                         ),
                       ],
                       icon: Icon(Icons.filter_list, size: 30),
@@ -217,52 +202,36 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
                     ? Center(child: CircularProgressIndicator())
                     : Padding(
                   padding: EdgeInsets.all(18.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: _suCoList.length,
-                          itemBuilder: (context, index) {
-                            // Kiểm tra xem có cần lọc danh sách hay không
-                            if (_filterStatus.isNotEmpty &&
-                                _suCoList[index].trangThai !=
-                                    _filterStatus) {
-                              // Bỏ qua nếu không khớp với trạng thái lọc
-                              return SizedBox.shrink();
-                            }
-                            return Padding(
-                              padding:
-                              const EdgeInsets.only(bottom: 15.0),
-                              child: GestureDetector(
-                                onTap: () async {
-                                  if (_suCoList[index].trangThai == 'a') {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => NVTiepnhanFormWidget(suCo: _suCoList[index]),
-                                      ),
-                                    );
-                                  } else {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => NVLogFormWidget(suCo: _suCoList[index]),
-                                      ),
-                                    );
-                                  }
-                                },
-                                child: ListReportProgressWidget(
-                                  suCo: _suCoList[index],
+                  child: ListView.builder(
+                    itemCount: getFilteredSuCoList().length,
+                    itemBuilder: (context, index) {
+                      SuCo suCo = getFilteredSuCoList()[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 15.0),
+                        child: GestureDetector(
+                          onTap: () async {
+                            if (suCo.trangThai == 'a') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => NVTiepnhanFormWidget(suCo: suCo),
                                 ),
-                              ),
-
-                            );
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => NVLogFormWidget(suCo: suCo),
+                                ),
+                              );
+                            }
                           },
+                          child: ListReportProgressWidget(
+                            suCo: suCo,
+                          ),
                         ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 ),
               ),
