@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '/components/confirm_dialog/confirm_dialog_widget.dart';
 import '/components/custom_appbar/custom_appbar_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -43,6 +45,49 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
     _model.dispose();
 
     super.dispose();
+  }
+  Future<void> changePassword(String oldPassword, String newPassword) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    try {
+      // Reauthenticate the user with the old password
+      await user?.reauthenticateWithCredential(
+        EmailAuthProvider.credential(
+          email: user.email!, // Use user.email! to access the email address
+          password: oldPassword,
+        ),
+      );
+
+      // Update the user's password with the new password
+      await user?.updatePassword(newPassword);
+
+      // Password change successful
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Password changed successfully!'),
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('The new password is too weak.'),
+          ),
+        );
+      } else if (e.code == 'wrong-password') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('The old password is incorrect.'),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An error occurred: ${e.code}'),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -382,30 +427,20 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                                     0.0, 0.0, 0.0, 16.0),
                                 child: FFButtonWidget(
                                   onPressed: () async {
-                                    await showDialog(
-                                      context: context,
-                                      builder: (dialogContext) {
-                                        return Dialog(
-                                          elevation: 0,
-                                          insetPadding: EdgeInsets.zero,
-                                          backgroundColor: Colors.transparent,
-                                          alignment: AlignmentDirectional(
-                                                  0.0, 0.0)
-                                              .resolve(
-                                                  Directionality.of(context)),
-                                          child: GestureDetector(
-                                            onTap: () => _model
-                                                    .unfocusNode.canRequestFocus
-                                                ? FocusScope.of(context)
-                                                    .requestFocus(
-                                                        _model.unfocusNode)
-                                                : FocusScope.of(context)
-                                                    .unfocus(),
-                                            child: ConfirmDialogWidget(),
-                                          ),
-                                        );
-                                      },
-                                    ).then((value) => setState(() {}));
+                                    final oldPassword = _model.oldPasswordTextController.text;
+                                    final newPassword = _model.passwordTextController.text;
+                                    final confirmPassword = _model.passwordConfirmTextController.text;
+
+                                    if (newPassword != confirmPassword) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Passwords do not match'),
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    await changePassword(oldPassword, newPassword);
                                   },
                                   text: 'Xác nhận',
                                   options: FFButtonOptions(

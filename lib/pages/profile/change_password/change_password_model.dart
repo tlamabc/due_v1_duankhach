@@ -52,4 +52,6 @@ class ChangePasswordModel extends FlutterFlowModel<ChangePasswordWidget> {
     passwordConfirmFocusNode?.dispose();
     passwordConfirmTextController?.dispose();
   }
+
+  changePassword(String text, String text2) {}
 }

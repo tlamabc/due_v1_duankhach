@@ -23,9 +23,8 @@ class NVDashboardWidget extends StatefulWidget {
 
 class _NVDashboardWidgetState extends State<NVDashboardWidget> {
   late NVDashboardModel _model;
+  late User? _currentUser; // Đối tượng để lưu trữ thông tin người dùng hiện tại
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  User? currentUser;
-
 
   List<SuCo> _suCoList = [];
   bool _isLoading = true;
@@ -34,19 +33,18 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
 
 
   List<SuCo> getFilteredSuCoList() {
+    String? currentUserEmail = _currentUser?.email;
     if (_filterStatus.isEmpty) {
       return _suCoList;
     } else if (_filterStatus == 'multiple') {
       return _suCoList.where((suCo) =>
-      suCo.nguoiTiepNhan == currentUser &&
-          (suCo.trangThai == 'c' || suCo.trangThai == 'd' || suCo.trangThai == 'b')).toList();
+      suCo.nguoiTiepNhan == currentUserEmail).toList();
     } else if (_filterStatus == 'a') {
       return _suCoList.where((suCo) => suCo.trangThai == 'a').toList();
     } else {
       return _suCoList;
     }
   }
-
 
   @override
   void initState() {
@@ -57,8 +55,12 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
     // Đặt giá trị ban đầu cho _filterStatus và _selectedFilter
     _filterStatus = 'a';
     _selectedFilter = 'Chưa tiếp nhận';
-  }
 
+    // Lấy thông tin người dùng hiện tại
+    _currentUser = FirebaseAuth.instance.currentUser;
+    // Log thông tin người dùng hiện tại
+    print('Current User: $_currentUser');
+  }
 
   Future<void> _fetchReports() async {
     final databaseReference = FirebaseDatabase.instance.ref().child('baocao');
@@ -71,6 +73,7 @@ class _NVDashboardWidgetState extends State<NVDashboardWidget> {
         snapshot.value as Map<dynamic, dynamic>;
         _suCoList.clear();
         reports.forEach((key, value) {
+
           _suCoList.add(SuCo.fromJson(Map<String, dynamic>.from(value)));
         });
       }
