@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/services.dart';
 import '../../../suco.dart';
 import '/components/account_profile/account_profile_widget.dart';
 import '/components/custom_menu/custom_menu_widget.dart';
@@ -12,6 +13,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'c_b_dashboard_model.dart';
 export 'c_b_dashboard_model.dart';
+import 'dart:io';
+
 
 class CBDashboardWidget extends StatefulWidget {
   const CBDashboardWidget({super.key});
@@ -22,11 +25,11 @@ class CBDashboardWidget extends StatefulWidget {
 
 class _CBDashboardWidgetState extends State<CBDashboardWidget> {
   late CBDashboardModel _model;
-
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<SuCo> _suCoList = [];
   bool _isLoading = true;
   String _filterStatus = '';
+
 
   @override
   void initState() {
@@ -84,7 +87,17 @@ class _CBDashboardWidgetState extends State<CBDashboardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return WillPopScope(
+        onWillPop: () async {
+      if (Platform.isAndroid || Platform.isIOS) {
+        // Nếu đây là Android hoặc iOS, thoát ứng dụng
+        SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        return false;
+      } else {
+        return true;
+      }
+    },
+    child: GestureDetector(
       onTap: () => _model.unfocusNode.canRequestFocus
           ? FocusScope.of(context).requestFocus(_model.unfocusNode)
           : FocusScope.of(context).unfocus(),
@@ -260,6 +273,7 @@ class _CBDashboardWidgetState extends State<CBDashboardWidget> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
